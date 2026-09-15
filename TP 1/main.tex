@@ -19,7 +19,6 @@
 \grupo{Los4Bugueados}
 
 \integrante{Campos, Felipe}{356/20}{felippe.1114@gmail.com}
-% \integrante{Apellido, Nombre2}{002/01}{email2@dominio.com} %
 \integrante{Portaluppi, Alejandro}{51/19}{alejandro\_portaluppi@outlook.com}
 \integrante{Chopite, Julio}{617/24}{juliodavidchopite@gmail.com}
 \integrante{Rychter, Ariel}{1294/21}{arirychter@gmail.com}
@@ -40,11 +39,61 @@
 
 \maketitle
 
+\section{Decisiones, Aclaraciones y Desarrollo.}
+
+
+Al pensar el problema por primera vez, nos dimos cuenta de que podíamos tratar todo como una transacción. Partimos escribiendo dos observadores: uno donde se cargaban las promociones y otro que era un superobservador que consideraba toda operación como una transacción (Transferencias, Acumulaciones, Canjes). Luego tuvimos que rediseñar los observadores, modularizando entre los diferentes tipos de transacciones, principalmente para las acumulaciones, donde teníamos que conectar también el observador de promociones. Esto nos llevó a terminar modularizando todo en cinco observadores para trabajar de forma prolija.
+
+Estos observadores cubren todos los casos. Con el superobservador anterior no se podían cubrir correctamente, principalmente, los procedimientos acumularMillas y resumenTransacciones. Estos observadores permiten realizar todas las operaciones de forma prolija y sin necesidad de hacer aclaraciones especiales.
+
+Finalmente, los observadores que consideramos minimales para especificar cada proc del TAD quedan de la siguiente manera:
+
+Aclaramos los tipos dado que el struct ($\struct{}$) y las tuplas ($\tupla{}$) pueden verse de la misma manera ya que en las macros tienen el mismo símbolo, para que quede claro también agregamos la palabra tupla para que puedan diferenciarse a la vista.
+
+El observador promociones es un diccionario que tiene como clave al nombre de la promoción (nombrePromo) y como valor parametrosPromo, que es un struct que tiene un factor y un tope.
+
+El observador historialDeTransferencias es una secuencia de transacciones, donde las transacciones son un struct que tiene un origen (quien envía la transferencia), un destino (quien la recibe) y la cantidad a transferir.
+
+El observador historialDeAcumulaciones es un diccionario que tiene como clave a los usuarios y como valor una secuencia de acumulaciones. Una acumulación es un struct que contiene la distanciaVolada, la promoción con la que se vuela, que es una tupla (nombrePromo, factor) donde factor es el factor de promoción, y las millasGanadas que se calculan mediante la fórmula dada por el enunciado:
+
+$$
+millasGanadas = millasVoladas \cdot factorCategoria \cdot factorPromocion
+$$
+
+El observador historialDeCanjes es un diccionario cuyas claves son usuarios y cuyo valor es una secuencia de enteros que representa las millas que se canjean en cada operación de canje que realiza el usuario.
+
+El observador referidos es un diccionario que toma como clave a un usuario y como valor una secuencia de enteros con el elemento 500, correspondientes a las millas ganadas por haber referido a alguien (donde tanto el referido como el referidor ganan sus 500 millas). No nos importa a quién refirió, ni por quién fue referido, sino únicamente el valor que ganó para poder contabilizarlo en millasTotales y millasDisponibles, y también para poder excluirlo en resumenTransacciones, que excluye las millas ganadas por referidos.
+
+En el asegura del proc registrarUsuario hicimos un predicado seAgregoUsuario(s,u), donde tomamos la decisión de asegurarnos de que todos los usuarios queden registrados en los observadores, inicializando los diccionarios con la clave del nuevo usuario y su valor como una secuencia vacía.
+
+El historial de transacciones del sistema es global y no discrimina por usuario, por lo tanto, no se modifica al registrar un usuario. Lo mismo sucede con las promociones, ya que no tienen relación con el registro de un usuario. Esta aclaración la hacemos dado que el enunciado pide explícitamente que las transacciones del usuario se inicien vacías, pero nuestras transacciones no están discriminadas por un usuario particular, sino que contemplan a los dos involucrados. Por lo tanto, no dependen de un único usuario y no pueden inicializarse como vacías para cada usuario, dado que las planteamos de manera diferente.
+
+Decidimos no hacer explícito los resultados que deben cumplir los auxiliares millasTotales y millasDisponibles, así como también por ejemplo los topes de la promo, ya que por construcción deberían devolver el resultado correcto y sería redundante volver a ponerlo, si bien ayuda a que quede claro, predicamos sobre los observadores, no sobre el comportamiento de un auxiliar (salvo que sea necesario). Por lo tanto quitamos predicados sobre auxiliares como por ejemplo que al registrarse con referidor, millasDisponibles y millasTotales deben dar 500 para el nuevo usuario, y sumar 500 a lo que ya tenía el referidor, dejando sólamente los predicados sobre observadores (a excepción de que sea necesario el auxiliar, así con cada operación que cambie el resultado de esos y otros auxiliares como puede ser una transferencia, un canje, una acumulación, un referido, el descuento en el tope de una promo, etc).
+
+En esta línea, el enunciado dice que en todo momento debe garantizarse que las millas disponibles de un usuario no superen sus millas totales, pero por construcción, milasDisponibles = millasTotales - millasPerdidas, por lo tanto siempre ocurre que $millasDisponibles \leq millasTotales$, entonces no hace falta estar verificando continuamente predicados sobre auxiliares dado que están construídos de forma tal que se respeten las consignas del enunciado. Por otro lado, para cumplir que las operaciones que modifican el sistema deben preservar la integridad de los saldos (ningún usuario puede tener saldo negativo), verificamos que las millasDisponibles sean suficientes para realizar la transferencia o canje. Para que se respete que los identificadores de usuario sean números enteros positivos se requieren positivos para ser válidos como entrada, entre otros casos. De esta manera nos aseguramos respetar estos puntos por construcción.
+
+
+Hay un error en el enunciado de acumularMillas: si un usuario tiene millas totales mayores o iguales a 50.000, se considera de categoría Oro con su factor asociado, y si un usuario tiene millas totales mayores o iguales a 1.000.000, es de categoría Platino. Ahora bien, si un usuario supera o iguala las 1.000.000 millas totales, el usuario es Oro y Platino al mismo tiempo, lo cual sabemos que no es posible, ya que un usuario no puede estar en dos categorías diferentes al mismo tiempo. Tomamos la decisión de resolver este inconveniente del enunciado imponiendo que el factor Oro para el usuario sea válido cuando tenga menos de 1.000.000 de millas totales.
+
+En transferirMillas encontramos un error de enunciado: dos usuarios pueden transferirse entre ellos infinitamente la misma cantidad una y otra vez, y ambos llegar a la categoría Platino. Por recomendación docente, decidimos seguir la directiva del enunciado, permitir el bug y dejar que el programador decida cómo afrontar este error.
+
+En cuanto al tope de una promo, decidimos hacer lo siguiente: tener un tope igual a -1 significa que no hay tope. Esto lo podemos utilizar, por ejemplo, cuando creamos el sistema con el nombre de la promoción No Promo, o cuando creamos una promoción sin tope. El tope es un número que va bajando a medida que los usuarios vuelan con la promoción y acumulan millas, haciendo: $tope - acumuladoGlobalDeMillasConEsaPromo$ \ hasta llegar a 0. Mientras baja el tope, la promoción está activa y, cuando llega a 0, se elimina del sistema. Tomamos la decisión de validar en el requiere que las millas a volar no superen el tope de la promoción: si el vuelo supera el tope de la promoción, no puede realizarse con esa promoción.
+
+Al final del proc acumularMillas, se utiliza el predicado miIfThenElse, un IfThenElse propio que se redefinió para no abusar del ifThenElse "nativo" del lenguaje sin saber lo que significa, y demostrar que no estamos usando el ifThenElse como si estuviéramos programando, sino el equivalente en su forma lógica. Esto nos permite hacer un else if (o elif) de forma justificada. Toma tres predicados de tipo booleano y devuelve un valor de verdad. Es muy útil como herramienta, por ejemplo, en acumularMillas, donde lo usamos para determinar en qué situación estamos: si el usuario gastó el tope de la promoción, si no llegó al tope o si la promoción no tiene tope. Con el fin de que quede clara la estructura, el último predicado (modificacionSegunTope) que utiliza el miIfThenElse propio es equivalente a:
+
+    \begin{verbatim}
+    if(LaPromoNoTieneTope)
+        then casoNoTope
+        else if(usuarioGastaElTopeDeLaPromo)
+            then casoGastaElTopeDeLaPromo
+        else casoNoGastaElTopeDeLaPromo
+    \end{verbatim}
+
 \section{Especificacion del TAD AirMiles}
 
 \noindent Trans ES $\struct{origen: \Z, destino: \Z, cantidad: \Z}$
 
-\noindent Acumulacion ES $\struct{distanciaVolada:\R, promo:\tupla{nombrePromo, factor}, millasGanadas:\R}$
+\noindent Acumulacion ES $\struct{distanciaVolada:\R, promo:tupla\tupla{nombrePromo, factor}, millasGanadas:\R}$
 
 \noindent parametrosPromo ES $\struct{factor:\R, tope:\R}$
 
@@ -54,42 +103,23 @@
 
 \noindent Usuario ES $\Z$
 
-\noindent Categoria ES $\str$
+\noindent Categoria ES $enum\{'Bronce', 'Plata', 'Oro, 'Platino'\}$
 
 \bigskip
-
-Pequeño comentario sobre como funciona el proc acumularMillas (pues se ve horrible en el documento): este proc simplemente garantiza que solo se modifica la cantidad de vuelos de un usuario en especifico y que modifica el historial de promociones condicionalmente, al final del proc, se utiliza el pred miIfThenElse (que se redefinio para no tener que abusar del ifThenElse "nativo" del lenguaje) y demostrar que no estamos usando el ifThenElse como si estuvieramos programando.
-
-    la estructura de la condicion es equivalente a
-    \begin{verbatim}
-    if(LaPromoNoTieneTope)
-        then casoNoTope
-    else if(elTopeDeLaPromoEsIgualALoQueElUsuarioVaAVolar)
-        then casoGastaElTopeDeLaPromo
-        else casoNoGastaElTopeDeLaPromo
-    \end{verbatim}
 
 
 \begin{tad}{AirMiles}
     \obs{promociones}{\dict{nombrePromo}{parametrosPromo}}
     \\
-    %\obs{historial}{\dict{usuario:\Z}{\seq{Trans}}}
     \obs{historialDeTransferencias}{\seq{Trans}}
     \\
     \obs{historialDeAcumulaciones}{\dict{Usuario}{\seq{Acumulacion}}}
     \\
-    \obs{historialDeCanjes}{\dict{Usuario}{\seq{millas:\Z}}}
+    \obs{historialDeCanjes}{\dict{Usuario}{\seq{millas:\R}}}
     \\
     \obs{referidos}{\dict{Usuario}{\seq{cantidad:\Z}}}
 
     \bigskip
-    
-    %Feli
-    
-    \textbf{Feli}
-    
-    \bigskip
-    
     
     \aux{usuarios}{s: AirMiles}{\conj{Usuario}}{claves(s.historialDeAcumulaciones)}
     
@@ -147,11 +177,22 @@ Pequeño comentario sobre como funciona el proc acumularMillas (pues se ve horri
     
     \bigskip
     
+    
+    \begin{proc}{registrarUsuario}{\Inout s:\Tipo{AirMiles}, \In u:\Tipo{Usuario}}{}
+    
+        \requiere{u > 0 \land \neg usuarioEnSistema(s,u) \land s = S_0}
+    
+        \aseguraLargo{seAgregoUsuario(s,u) \ \land \\ lasDemasAcumulacionesNoCambian(s,S_0,u) \land \\ losDemasCanjesNoCambian(s,S_0,u) \land \\ losDemasReferidosNoCambian(s,S_0,u)  \land \\ transferenciasNoCambian(s,S_0) \land \\ promocionesNoCambia(s,S_0) \ \land \\ millasDisponibles(s,u) = 0 \land millasTotales(s,u) = 0}
+    \end{proc}
+    
+    
+    \bigskip
+    
     \predLargo{usuarioEnSistema}{s: AirMiles, u: Usuario}{u \in usuarios(s)}
     
     \bigskip
     
-    \predLargo{seAgregoUsuario}{s: AirMiles, u: Usuario}{u \in s.historialDeAcumulaciones \land s.historialDeAcumulaciones[u] = <> \ \land \\ u \in s.historialDeCanjes \land s.historialDeCanjes[u] = <> \ land \\ u \in s.referidos \land s.referidos[u] = <>}
+    \predLargo{seAgregoUsuario}{s: AirMiles, u: Usuario}{u \in s.historialDeAcumulaciones \land s.historialDeAcumulaciones[u] = <> \ \land \\ u \in s.historialDeCanjes \land s.historialDeCanjes[u] = <> \ \land \\ u \in s.referidos \land s.referidos[u] = <>}
     
     \bigskip
     
@@ -159,11 +200,13 @@ Pequeño comentario sobre como funciona el proc acumularMillas (pues se ve horri
     
     \bigskip
     
-    \predLargo{losDemasCanjesNoCambian}{s: AirMiles, S_0: AirMiles, u: Usuario}{(\forall usu:Usuario)(usu \in claves(S_0.historialDeCanjes) \implica usu\in claves(s.historialDeCanjes)) \land (\forall usu:Usuario)((usu \in claves(S_0.historialDeCanjes) \land usu \neq u) \implicaLuego s.historialDeCanjes[usu] = S_0.historialDeCanjes[usu])}
+    \predLargo{losDemasCanjesNoCambian}{s: AirMiles, S_0: AirMiles, u: Usuario}{(\forall usu:Usuario)(usu \in claves(S_0.historialDeCanjes) \implica usu\in claves(s.historialDeCanjes)) \land (\forall usu:Usuario)((usu \in claves(S_0.historialDeCanjes) \land usu \neq u) \implicaLuego \\ s.historialDeCanjes[usu] = S_0.historialDeCanjes[usu])}
     
     \bigskip
     
     \predLargo{losDemasReferidosNoCambian}{s: AirMiles, S_0: AirMiles, u: Usuario}{(\forall usu: Usuario)(usu \in claves(S_0.referidos) \implica usu \in claves(s.referidos)) \land (\forall usu: Usuario)((usu \in claves(S_0.referidos) \land usu \neq u) \implicaLuego s.referidos[usu] = S_0.referidos[usu])}
+    
+    \bigskip
     
     \predLargo{transferenciasNoCambian}{s: AirMiles, S_0: AirMiles}{s.historialDeTransferencias = S_0.historialDeTransferencias}
     
@@ -173,36 +216,452 @@ Pequeño comentario sobre como funciona el proc acumularMillas (pues se ve horri
     
     \bigskip
     
-    
-    \begin{proc}{registrarUsuario}{\Inout s:\Tipo{AirMiles}, \In u:\Tipo{Usuario}}{}
-    
-        \requiere{u > 0 \land \neg usuarioEnSistema(s,u) \land s = S_0}
-    
-        \aseguraLargo{seAgregoUsuario(s,u) \ \land \\ lasDemasAcumulacionesNoCambian(s,S_0,u) \land \\ losDemasCanjesNoCambian(s,S_0,u) \land \\ losDemasReferidosNoCambian(s,S_0,u)  \land \\ transferenciasNoCambian(s,S_0) \land \\ promocionesNoCambia(s,S_0)}
-    \end{proc}
-    
-    \bigskip
-    
-    
-    \predLargo{losOtrosReferidosNoCambian}{s: AirMiles, S_0: AirMiles, u: Usuario, ref: Usuario}{(\forall usu:\Z)(usu \in claves(S_0.referidos) \land \implica usu \in claves(s.referidos))\land \\ (\forall usu:\Z)((usu \in claves(S_0.referidos) \land usu \neq u \land usu \neq ref) \implicaLuego S_0.referidos[usu] = s.referidos[usu])}
-    
-    \bigskip
-    
-    
-    \predLargo{seAgregoReferido}{s: AirMiles, S_0: AirMiles, u: Usuario, ref: Usuario}{s.referidos[u] = S_0.referidos[u] ++ <500> \ \land \ s.referidos[ref] = S_0.referidos[ref] ++ <500>}
-    
-    \bigskip
-    
-    
     \begin{proc}{registrarUsuarioConReferidor}{\Inout s:\Tipo{AirMiles}, \In ref:\Tipo{Usuario}, \In u:\Tipo{Usuario}}{}
     
         \requiere{u > 0 \land \neg usuarioEnSistema(s,u) \land usuarioEnSistema(s,ref) \land s=S_0}
     
-        \aseguraLargo{seAgregoUsuario(s,u) \ \land \\ seAgregoReferido(s,S_0,u,ref) \ \land \\  lasDemasAcumulacionesNoCambian(s,S_0,u) \ \land \\ losDemasCanjesNoCambia(s,S_0,u) \ \land \\ transferenciasNoCambian(s,S_0) \ \land \\ losOtrosReferidosNoCambian(s,S_0,u,ref) \ \land \\ promocionesNoCambia(s,S_0)}
+        \aseguraLargo{seAgregoUsuario(s,u) \ \land \\ seAgregoReferido(s,S_0,u,ref) \ \land \\  lasDemasAcumulacionesNoCambian(s,S_0,u) \ \land \\ losDemasCanjesNoCambian(s,S_0,u) \ \land \\ transferenciasNoCambian(s,S_0) \ \land \\ losOtrosReferidosNoCambian(s,S_0,u,ref) \ \land \\ promocionesNoCambia(s,S_0)}
     
     \end{proc}
     
     \bigskip
+    
+    \predLargo{seAgregoReferido}{s: AirMiles, S_0: AirMiles, u: Usuario, ref: Usuario}{s.referidos[u] = S_0.referidos[u] ++ <500> \ \land \\ s.referidos[ref] = S_0.referidos[ref] ++ <500>}
+    
+    \bigskip
+    
+        \predLargo{losOtrosReferidosNoCambian}{s: AirMiles, S_0: AirMiles, u: Usuario, ref: Usuario}{(\forall usu:\Z)(usu \in claves(S_0.referidos) \land \implica usu \in claves(s.referidos))\land \\ (\forall usu:\Z)((usu \in claves(S_0.referidos) \land usu \neq u \land usu \neq ref) \implicaLuego S_0.referidos[usu] = s.referidos[usu])}
+    
+    \bigskip
+    
+\begin{proc}{acumularMillas}
+    {
+    \In u: Usuario,
+    \In millasVoladas: \R,
+    \In promo: nombrePromo,
+    \Inout s: AirMiles
+    }{}
+
+    \requiereLargo{
+        (s = s_0)
+        \ \land \ (usuarioEnSistema(S_0,u))
+        \ \land \\
+        (existePromo(promo,S_0))
+        \ \land \\
+        (millasVoladas > 0)
+        \ \land \\
+        (promoDisponeDeMillasParaVuelo(
+            u,
+            promo,
+            millasVoladas,
+            s_0
+        ))
+    }
+
+    \aseguraLargo{
+        canjesNoCambia(s_0,s)
+        \ \land \\
+        referidosNoCambia(s_0,s)
+        \ \land \\
+        transferenciasNoCambian(s_0,s)
+        \ \land \\
+        esSubSeq(
+            s_0.historialDeAcumulaciones[u],
+            s.historialDeAcumulaciones[u]
+        )
+        \ \land \\
+        modificacionSegunTope(
+            u,
+            millasVoladas,
+            promo,
+            s,
+            s_0
+        )
+    }
+\end{proc}
+
+\bigskip
+
+\predLargo{existePromo}
+{
+    promo: nombrePromo,
+    s: AirMiles
+}{
+    promo \in claves(s.promociones)
+}
+
+\bigskip
+
+\predLargo{promoDisponeDeMillasParaVuelo}
+{
+    u: Usuario,
+    promo: nombrePromo,
+    millasAVolar: \R,
+    s: AirMiles
+}{
+    s.promociones[promo].tope = -1
+    \lor \\ millasAVolar
+        * factorCategoria(s,u)
+        * s.promociones[promo].factor
+        \leq
+        s.promociones[promo].tope}
+
+\bigskip
+
+\predLargo{esSubSeq}
+{
+    S_0: \seq{T},
+    S: \seq{T}
+}{
+    (\norm{S_0} \leq \norm{S})
+    \\
+    \yLuego
+    \paraTodo{i}{\Z}{
+        (0 \leq i < \norm{S_0})
+        \implicaLuego
+        (S_0[i] = S[i])
+    }
+}
+
+\bigskip
+
+\predLargo{miIfThenElse}
+{
+    predicado: bool,
+    Then: bool,
+    Else: bool
+}{
+    (predicado \land Then)
+    \lor
+    (\neg predicado \land Else)
+}
+
+\bigskip
+
+\predLargo{promoNoTieneTope}
+{
+    promo: nombrePromo,
+    s_0: AirMiles
+}{
+    s_0.promociones[promo].tope = -1
+}
+
+\bigskip
+
+\predLargo{usuarioGastaElTopeDeLaPromo}
+{
+    u: Usuario,
+    millasVoladas: \R,
+    promo: nombrePromo,
+    s_0: AirMiles
+}{
+    millasVoladas
+    * factorCategoria(s_0,u)
+    * s_0.promociones[promo].factor
+    = \\
+    s_0.promociones[promo].tope
+}
+
+\bigskip
+
+\predLargo{seAgregoVuelo}
+{
+    vuelo: Acumulacion,
+    s: \seq{Acumulacion},
+    s_0: \seq{Acumulacion}
+}{
+    (vuelo \in s)
+    \land
+    (
+        aparicionesEnSeqDe(vuelo,s)
+        =
+        aparicionesEnSeqDe(vuelo,s_0) + 1
+    )
+}
+
+\bigskip
+
+\predLargo{usuarioTiene1VueloMas}
+{
+    u: Usuario,
+    s: AirMiles,
+    s_0: AirMiles
+}{
+    \norm{s.historialDeAcumulaciones[u]}
+    =
+    \norm{s_0.historialDeAcumulaciones[u]} + 1
+}
+
+\bigskip
+
+\predLargo{soloCambioLaPromoP}
+{
+    promo: nombrePromo,
+    s: AirMiles,
+    s_0: AirMiles
+}{
+    (promo \in claves(s.promociones))
+    \land \\
+    (s.promociones[promo]
+    \neq
+    s_0.promociones[promo])
+    \land \\
+    \paraTodo{p}{claves(s_0.promociones)}
+    {
+        (promo \neq p)
+        \implicaLuego
+        (
+            s.promociones[p]
+            =
+            s_0.promociones[p]
+        )
+    }
+}
+
+\bigskip
+
+\auxLargo{crearAcumulacion}
+{
+    distancia: \R,
+    NombrePromo: nombrePromo,
+    factor: \R,
+    millasGanadas: \R
+}
+{Acumulacion}
+{
+    \struct{
+        distanciaVolada: distancia, \\
+        promo: tupla\tupla{NombrePromo,factor}, \\
+        millasGanadas: millasGanadas
+    }
+}
+
+\bigskip
+
+\predLargo{casoNoTope}
+{
+    u: Usuario,
+    millasVoladas: \R,
+    promo: nombrePromo,
+    s: AirMiles,
+    s_0: AirMiles
+}{
+    promocionesNoCambia(s,s_0)
+    \ \land \\ usuarioTiene1VueloMas(u,s,s_0)
+    \ \land \\ seAgregoVuelo(
+        crearAcumulacion( \\ 
+            millasVoladas,
+            promo,
+            s_0.promociones[promo].factor,
+            millasVoladas
+            * factorCategoria(s_0,u)
+            * s_0.promociones[promo].factor
+        ),
+        s.historialDeAcumulaciones[u],
+        s_0.historialDeAcumulaciones[u]
+    )
+    \\ \land lasDemasAcumulacionesNoCambian(s,s_0,u)}
+
+\bigskip
+
+\predLargo{casoGastaElTopeDeLaPromo}
+{
+    u: Usuario,
+    millasVoladas: \R,
+    promo: nombrePromo,
+    s: AirMiles,
+    s_0: AirMiles
+}{
+    usuarioTiene1VueloMas(u,s,s_0)
+    \ \land \\ seAgregoVuelo(
+        crearAcumulacion( \\ 
+            millasVoladas,
+            promo,
+            s_0.promociones[promo].factor,
+            millasVoladas
+            * factorCategoria(s_0,u)
+            * s_0.promociones[promo].factor
+        ),
+        s.historialDeAcumulaciones[u],
+        s_0.historialDeAcumulaciones[u]
+    )
+    \\ \land seEliminaPromocion(s_0,s,promo)
+    \ \land \\ lasDemasAcumulacionesNoCambian(s,s_0,u)
+}
+
+\bigskip
+
+\predLargo{casoNoGastaElTopeDeLaPromo}
+{
+    u: Usuario,
+    millasVoladas: \R,
+    promo: nombrePromo,
+    s: AirMiles,
+    s_0: AirMiles
+}{
+    usuarioTiene1VueloMas(u,s,s_0)
+    \ \land \\ seAgregoVuelo(
+        crearAcumulacion( \\
+            millasVoladas,
+            promo,
+            s_0.promociones[promo].factor,
+            millasVoladas
+            * factorCategoria(s_0,u)
+            * s_0.promociones[promo].factor
+        ),
+        s.historialDeAcumulaciones[u],
+        s_0.historialDeAcumulaciones[u]
+    )
+    \\ \land \ s.promociones[promo].tope
+    =
+    s_0.promociones[promo].tope
+    -
+    (
+        millasVoladas
+        * factorCategoria(s_0,u)
+        * s_0.promociones[promo].factor
+    )
+    \ \land \\ \norm{s.promociones}
+    =
+    \norm{s_0.promociones}
+    \ \land \\  soloCambioLaPromoP(promo,s,s_0)
+    \ \land \\ lasDemasAcumulacionesNoCambian(s,s_0,u)
+}
+
+\bigskip
+
+\predLargo{modificacionSegunTope}
+{
+    u: Usuario,
+    millasVoladas: \R,
+    promo: nombrePromo,
+    s: AirMiles,
+    s_0: AirMiles
+}
+{
+    miIfThenElse\bigg(
+        \big(promoNoTieneTope\big), \\ \big(
+        casoNoTope(u,millasVoladas,promo,s,s_0)\big), \\
+        \bigg(miIfThenElse\bigg( \\
+            \big(usuarioGastaElTopeDeLaPromo(
+                u,
+                millasVoladas,
+                promo,
+                s_0
+            )\big), \\
+            \big(casoGastaElTopeDeLaPromo(
+                u,
+                millasVoladas,
+                promo,
+                s,
+                s_0
+            )\big), \\
+            \big(casoNoGastaElTopeDeLaPromo(
+                u,
+                millasVoladas,
+                promo,
+                s,
+                s_0
+            )\big)
+        \bigg)\bigg)
+    \bigg)
+}
+
+
+\bigskip
+
+\begin{proc}{canjearMillas}{\Inout s: \Tipo{AirMiles}, \In u:\Tipo{Usuario}, \In millas:\R}{}
+          
+        \requiereLargo{s = S_0 \ \land \ millas > 0  \ \land usuarioEnSistema(s,u) \ \yLuego \ millas \leq millasDisponibles(s,u)}
+          
+        \aseguraLargo{realizarCanje(s,S_0,u,millas) \ \land \\ losDemasCanjesNoCambian(s,S_0,u) \ \land \\ promocionesNoCambia(s,S_0) \ \land \\ acumulacionesNoCambia(s,S_0) \ \land \\ referidosNoCambia(s,S_0) \land \\ transferenciasNoCambian(s,S_0)}
+          
+    \end{proc}
+    
+    \bigskip
+    
+    \predLargo{realizarCanje}{s: AirMiles, S_0: AirMiles, u: Usuario, millas:\R}{s.historialDeCanjes[u] = S_0.historialDeCanjes[u] ++ <millas> \land \\ millasDisponibles(s, u) = millasDisponibles(S_0, u) - millas}
+    
+    \bigskip
+    
+    \predLargo{acumulacionesNoCambia}{s: AirMiles, S_0: AirMiles}{s.historialDeAcumulaciones = S_0.historialDeAcumulaciones}
+    
+    \bigskip
+    
+    \predLargo{referidosNoCambia}{s: AirMiles, S_0: AirMiles}{s.referidos = S_0.referidos}
+    
+    \bigskip
+    
+    
+    \begin{proc}{transferirMillas}
+    {
+    \In origen: \Z ,
+    \In destino: \Z ,
+    \In monto: \R ,
+    \Inout S: \Tipo{AirMiles}
+    }{
+    }
+        \requiereLargo{
+            (s = s_0) \land monto > 0 \land (usuarioEnSistema(s_0, origen)) \land
+            (usuarioEnSistema(s_0, destino)) \land
+            (origen \neq destino) \land
+            disponeDeMillas(origen, monto, s_0)
+        }
+        \aseguraLargo{
+        % el unico observador que cambia es el historialDeTransferencias
+        (promocionesNoCambia(s_0,s)) \land \\
+        (acumulacionesNoCambia(s_0,s)) \land \\
+        (canjesNoCambia(s_0,s)) \land \\
+        (referidosNoCambia(s_0,s)) \land \\
+        tamañoNuevoHistorialDeTransSuma1(s, s_0) \land \\
+        esSubSeq(s_0.historialDeTransferencias, s.historialDeTransferencias) \land \\
+        seAgregoTrans(
+            \struct{origen: origen, destino: destino, cantidad: monto}, \\
+            s_0.historialDeTransferencias,
+            s.historialDeTransferencias
+        )
+        }
+    \end{proc}
+
+\bigskip
+
+\predLargo{canjesNoCambia}{s: AirMiles, S_0: AirMiles}{s.historialDeCanjes = S_0.historialDeCanjes}
+
+\bigskip
+
+\predLargo{tamañoNuevoHistorialDeTransSuma1}{\In s: Airmiles, \In s_0: Airmiles}{
+    \norm{s.historialDeTransferencias} = \norm{s_0.historialDeTransferencias} + 1
+}
+
+\bigskip
+
+\predLargo{seAgregoTrans}{trans: Trans,S_0: \seq{Trans},S : \seq{Trans}}{
+    (trans \in S) \\
+    \land ((aparicionesEnSeqDe(trans, S_0) + 1 = aparicionesEnSeqDe(trans, S)))
+}
+    
+\bigskip
+
+\predLargo{disponeDeMillas}{
+u: Usuario,
+millas: \R,
+s: AirMiles
+}{
+    millasDisponibles(s,u) \geq millas
+}
+
+\bigskip
+
+\auxLargo{aparicionesEnSeqDe}{
+e: T,
+s: \seq{T}
+}{
+\Z
+}{
+\sum_{i=0}^{\norm{s} -1}{ifThenElse(s[i] = e , 1, 0)}
+}
+
+\bigskip
     
     \begin{proc}{consultarSaldo}{\In s:\Tipo{AirMiles}, \In u:\Tipo{Usuario}}{\R}
     
@@ -222,34 +681,8 @@ Pequeño comentario sobre como funciona el proc acumularMillas (pues se ve horri
     
     \end{proc}
     
-    \bigskip
-    
-    \predLargo{referidosNoCambia}{s: AirMiles, S_0: AirMiles}{s.referidos = S_0.referidos}
-    
-    \bigskip
-    
-    \predLargo{acumulacionesNoCambia}{s: AirMiles, S_0: AirMiles}{s.historialDeAcumulaciones = S_0.historialDeAcumulaciones}
-    
-    \bigskip
-    
-    \predLargo{realizarCanje}{s: AirMiles, S_0: AirMiles, u: Usuario, millas:\R}{s.historialDeCanjes[u] = s_0.historialDeCanjes[u] ++ <millas> \land \\ millasDisponibles(s, u) = millasDisponibles(S_0, u) - millas}
-    
-    \bigskip
-    
-    \begin{proc}{canjearMillas}{\Inout s: \Tipo{AirMiles}, \In u:\Tipo{Usuario}, \In millas:\R}{}
-          
-        \requiereLargo{s = S_0 \ \land \ millas > 0  \ \land usuarioEnSistema(s,u) \ \yLuego \ millas \leq millasDisponibles(s,u)}
-          
-        \aseguraLargo{realizarCanje(s,S_0,u,millas) \ \land \\ losDemasCanjesNoCambian(s,u) \ \land \\ promocionesNoCambia(s,S_0) \ \land \\ acumulacionesNoCambia(s,S_0) \ \land \\ referidosNoCambia(s,S_0) \\ \land transferenciasNoCambian(s,S_0)}
-          
-    \end{proc}
-    
-    \textbf{Feli}
-    
-    \bigskip
-    %Feli
-    % --- Procedimiento Principal ---
-    \begin{proc}{rankingMillas}{\In N: \Z, \In s: \Tipo{AirMiles}}{\seq{Usuario}}{}
+
+    \begin{proc}{rankingMillas}{\In N: \Z, \In s: \Tipo{AirMiles}}{\seq{Usuario}}
 
         \requiereLargo{N > 0}
 
@@ -257,24 +690,24 @@ Pequeño comentario sobre como funciona el proc acumularMillas (pues se ve horri
             estaOrdenadoSegunCantidadMillasDisponibles(res,s)
             \ \land \\
             todosUsuariosEstanEnElHistorial(res,s)
-            \ \land \\ resTieneTamañoMenorOIgualQueN(res, s, N) \ land \\ todosUsuariosDistintos(res) \ land \\ todosLosNoSeleccionadosTienenMenosOMismasMillas(res,s)
+            \ \land \\ resTieneTamañoMenorOIgualQueN(res, s, N) \ \land \\ todosUsuariosDistintos(res) \ \land \\ todosLosNoSeleccionadosTienenMenosOMismasMillas(res,s)
             }
     \end{proc}
 
 \bigskip
 
-\predLargo{estaOrdenadoSegunCantidadMillasDisponibles}{u: \Tipo{seq}\langle\Z\rangle, s: \Tipo{AirMiles}}{
+\predLargo{estaOrdenadoSegunCantidadMillasDisponibles}{res: \seq{Usuario}, s: \Tipo{AirMiles}}{
     (\forall i:\Z)(
-        0 \leq i < |u|-1
-        \ \yLuego\
-        millasDisponibles(s,u[i]) \geq millasDisponibles(s,u[i+1])
+        0 \leq i < |res|-1
+        \ \implicaLuego
+        millasDisponibles(s,res[i]) \geq millasDisponibles(s,res[i+1])
     )}
     
 \bigskip
 
 \predLargo{todosUsuariosEstanEnElHistorial}{res: \seq{Usuario}, s: \Tipo{AirMiles}}{
     (\forall i:\Z)(
-        0 \leq i < |u|
+        0 \leq i < |res|
         \ \implicaLuego \
         res[i] \in usuarios(s)
     )}
@@ -284,14 +717,14 @@ Pequeño comentario sobre como funciona el proc acumularMillas (pues se ve horri
 \predLargo{resTieneTamañoMenorOIgualQueN}{res:\seq{Usuario}, s: AirMiles, N: \Z}{(N \leq |usuarios(s)| \ \land \ |res| = N)
             \ \lor \\
             (|usuarios(s)| < N
-            \ \land \ |res| = |s.historialDeAcumulaciones|)}
+            \ \land \ |res| = |usuarios(s)|)}
 
     \bigskip
     
     \predLargo{todosUsuariosDistintos}{res:\seq{Usuario}}{
     (\forall i:\Z)(
         0 \leq i < |res|
-        \ \rightarrow_L\
+        \ \implicaLuego
         (\forall j:\Z)(
             0 \leq j < |res|
             \ \land\
@@ -306,11 +739,11 @@ Pequeño comentario sobre como funciona el proc acumularMillas (pues se ve horri
 
 \predLargo{todosLosNoSeleccionadosTienenMenosOMismasMillas}
 {res:\seq{Usuario},s:\Tipo{AirMiles}}{
-    (\forall u:\Z)(
+    (\forall u:Usuario)(
         u \in usuarios(s)
         \ \land\
-        u \notin res
-        \ \rightarrow_L\
+        u \notin res \land |res| > 0
+        \ \implicaLuego \\
         millasDisponibles(s,u)
         \leq
         millasDisponibles(s,res[|res|-1])
@@ -318,6 +751,22 @@ Pequeño comentario sobre como funciona el proc acumularMillas (pues se ve horri
 }
 
 \bigskip
+
+\begin{proc}{resumenTransacciones}{
+\In u: Usuario,
+\In s: AirMiles
+}{\struct{total: \R, canjeadas: \R, enviadas: \R, recibidas: \R}}
+{
+    \requiere{usuarioEnSistema(s,u)}
+    \aseguraLargo{
+        (res.total = millasTotales(s,u)) \land \\
+        (res.canjeadas = sumaDeCanjes(u,s)) \land \\
+        (res.enviadas = sumaDeTransferenciasEnviadas(s,u)) \land \\
+        (res.recibidas = sumaDeTransferenciasRecibidas(s,u))
+    }
+}
+
+\end{proc}
 
 
 
@@ -331,7 +780,6 @@ Pequeño comentario sobre como funciona el proc acumularMillas (pues se ve horri
             \norm{nombre} > 0 \land \\
             factor \geq 1 \land \\
             s = s_0 \land \\
-            %nombre \notin s.promociones
             \neg existePromo(nombre, s_0)
         }
         \aseguraLargo{
@@ -359,7 +807,6 @@ Pequeño comentario sobre como funciona el proc acumularMillas (pues se ve horri
             factor \geq 1 \land \\
             tope > 0 \land \\
             s = s_0 \land \\
-            %nombre \notin s.promociones
             \neg existePromo(nombre, s_0)
         }
         \aseguraLargo{
@@ -382,7 +829,7 @@ Pequeño comentario sobre como funciona el proc acumularMillas (pues se ve horri
     }{}
         \requiereLargo{
             \norm{nombre} > 0 \land \\
-            nombre \neq \text{``NoPromo''} \land \\
+            nombre \neq "NoPromo" \land \\
             nombre \in s.promociones \land \\
             s = s_0
         }
@@ -397,7 +844,7 @@ Pequeño comentario sobre como funciona el proc acumularMillas (pues se ve horri
 
     \bigskip
 
-    \predLargo{canjesNoCambia}{s: AirMiles, S_0: AirMiles}{s.historialDeCanjes = S_0.historialDeCanjes}
+
     
     \bigskip
 
@@ -422,15 +869,11 @@ Pequeño comentario sobre como funciona el proc acumularMillas (pues se ve horri
 
     \bigskip
 
-%---Ari
-
-    \predLargo{tieneMasMillasQueLosDemas}{res: Usuario, s: AirMiles}{(\forall u:\Z)(u \in usuarios(s) \ \implicaLuego \ millasTotales(u,s) \leq millasTotales(res,s)}
-
-    \bigskip
+    
 
     \begin{proc}{elQueTieneMasMillas}{\In s: \Tipo{AirMiles}}{Usuario}
 
-        \requiereLargo{|claves(s.historialDeAcumulaciones)| > 0}
+        \requiereLargo{|usuarios(s)| > 0}
 
         \aseguraLargo{
             usuarioEnSistema(s,res)
@@ -438,13 +881,17 @@ Pequeño comentario sobre como funciona el proc acumularMillas (pues se ve horri
         }
 
     \end{proc}
+    
+    \predLargo{tieneMasMillasQueLosDemas}{res: Usuario, s: AirMiles}{(\forall u: Usuario)(u \in usuarios(s) \ \implicaLuego \ millasTotales(s,u) \leq millasTotales(s,res)}
+
+    \bigskip
 
 
     \bigskip
  
     \begin{proc}{elMasCanjeador}{\In s: \Tipo{AirMiles}}{Usuario}
 
-        \requiereLargo{|claves(s.historialDeCanjes)| > 0}
+        \requiereLargo{|usuarios(s)| > 0}
 
         \aseguraLargo{res \in usuarios(s) \yLuego (\forall k: Usuario)(k \in \\ 
         usuarios(s) \implicaLuego (millasPerdidas(k,s) \leq millasPerdidas(res,s))
@@ -454,13 +901,13 @@ Pequeño comentario sobre como funciona el proc acumularMillas (pues se ve horri
     
     \bigskip
 
-    \auxLargo{millasPerdidas}{u: Usuario, s: \Tipo{AirMiles}}{\Z}{sumaDeCanjes(u,s) + sumaDeTransferenciasEnviadas(s,u)}
+    \auxLargo{millasPerdidas}{u: Usuario, s: \Tipo{AirMiles}}{\R}{sumaDeCanjes(u,s) + sumaDeTransferenciasEnviadas(s,u)}
     
     \bigskip
-    % --- Procedimiento Principal ---
+
 \begin{proc}{paresTransferidoresExclusivos}
     {\In s: \Tipo{AirMiles}}
-    {res:\seq{\tupla{Usuario, Usuario}}}
+    {res:\seq{tupla\tupla{Usuario, Usuario}}}
 
     \requiereLargo{True}
 
@@ -479,7 +926,7 @@ Pequeño comentario sobre como funciona el proc acumularMillas (pues se ve horri
 \bigskip
 
 
-% --- Existe al menos una transferencia entre a y b ---
+% Existe al menos una transferencia entre a y b
 \predLargo{sonTransferidores}
     {a: Usuario, b: Usuario, s: AirMiles}
 {
@@ -488,11 +935,11 @@ Pequeño comentario sobre como funciona el proc acumularMillas (pues se ve horri
         \ \land \\
         (
             (s.historialDeTransferencias[i].origen = a
-            \land
+            \land \\
             s.historialDeTransferencias[i].destino = b)
             \ \lor \\
             (s.historialDeTransferencias[i].origen = b
-            \land
+            \land \\
             s.historialDeTransferencias[i].destino = a)
         )
     )
@@ -501,7 +948,7 @@ Pequeño comentario sobre como funciona el proc acumularMillas (pues se ve horri
 \bigskip
 
 
-% --- a solamente le transfiere a b ---
+% a solamente le transfiere a b
 \predLargo{usuarioAsoloLeTransfiereExclusivamenteAlUsuarioB}
     {a: Usuario, b: Usuario, s: AirMiles}
 {
@@ -519,13 +966,11 @@ Pequeño comentario sobre como funciona el proc acumularMillas (pues se ve horri
 \bigskip
 
 
-% --- b solamente le transfiere a a ---
+% b solamente le transfiere a a
 % Se obtiene reutilizando el predicado anterior.
 \predLargo{sonTransferidoresExclusivos}
     {a: Usuario, b: Usuario, s: AirMiles}
 {
-    a \neq b
-    \ \land \\
     sonTransferidores(a,b,s)
     \ \land \\
     usuarioAsoloLeTransfiereExclusivamenteAlUsuarioB(a,b,s)
@@ -536,17 +981,17 @@ Pequeño comentario sobre como funciona el proc acumularMillas (pues se ve horri
 \bigskip
 
 
-% --- Todo par que aparece en res es exclusivo ---
+% Todo par que aparece en res es exclusivo
 \predLargo{todosLosParesEnResSonExclusivos}
-    {res:\seq{\tupla{Usuario, Usuario}},
+    {res:\seq{tupla\tupla{Usuario, Usuario}},
      s:\Tipo{AirMiles}}
 {
     (\forall i:\Z)(
         0 \leq i < |res|
         \ \implicaLuego \
         sonTransferidoresExclusivos(
-            res[i].0,
-            res[i].1,
+            res[i]_0,
+            res[i]_1,
             s
         )
     )
@@ -555,32 +1000,28 @@ Pequeño comentario sobre como funciona el proc acumularMillas (pues se ve horri
 \bigskip
 
 
-% --- Todo par exclusivo aparece en res ---
+% Todo par exclusivo aparece en res
 \predLargo{enResEstanTodosLosExclusivos}
-    {res:\seq{\tupla{Usuario, Usuario}},
+    {res:\seq{tupla\tupla{Usuario, Usuario}},
      s:\Tipo{AirMiles}}
 {
-    (\forall a,b:Usuario)(
+    (\forall a,b:Usuario)((
         (
             usuarioEnSistema(s,a)
             \land
             usuarioEnSistema(s,b)
         )
-        \ \implicaLuego \\
-        (
-            sonTransferidoresExclusivos(a,b,s)
-            \implica
-            \tupla{a,b} \in res
-        )
-    )
-}
+         \yLuego \\
+            sonTransferidoresExclusivos(a,b,s))
+            \implicaLuego
+            (tupla\tupla{a,b} \in res \lor tupla\tupla{b,a} \in res))}
 
 \bigskip
 
 
-% --- No se repite exactamente el mismo par ---
+% No se repite exactamente el mismo par
 \predLargo{noHayParesRepetidos}
-    {res:\seq{\tupla{Usuario, Usuario}}}
+    {res:\seq{tupla\tupla{Usuario, Usuario}}}
 {
     (\forall i,j:\Z)(
         (
@@ -598,503 +1039,19 @@ Pequeño comentario sobre como funciona el proc acumularMillas (pues se ve horri
 \bigskip
 
 
-% --- No aparecen ambos órdenes del mismo par ---
+% No aparecen ambos órdenes del mismo par
 \predLargo{noSeInviertenEnRes}
-    {res:\seq{\tupla{Usuario, Usuario}}}
+    {res:\seq{tupla\tupla{Usuario, Usuario}}}
 {
     (\forall i:\Z)(
         0 \leq i < |res|
         \ \implicaLuego
-        \tupla{res[i]_1,res[i]_0} \notin res
+        tupla\tupla{res[i]_1,res[i]_0} \notin res
     )
 }
 
-\bigskip
-%Made by Ari 
 
-
-% Empiezan los procs de julio junto con los preds y aux especificos de
-% sus procs -Julio 
-\
-
-\begin{proc}{acumularMillas}
-    {
-    \In u: Usuario ,
-    \In millasVoladas: \R ,
-    \In promo: \seq{\cha} ,
-    \Inout s: AirMiles
-    }{}
-        % preguntarle si es necesario el yLuego en el (s = s_0) por si se
-        % indefine usuarioEnSistema (se puede evitar)
-        \requiereLargo{
-            (s = s_0) \land (usuarioEnSistema(S_0, u)) \ 
-            \land (existePromo(promo, S_0)) \ 
-            \land (millasVoladas > 0) \
-            \land (promoDisponeDeMillasParaVuelo(u, promo, millasVoladas, s_0))}
-        
-        \aseguraLargo{
-        % el unico observador que cambia es el historialDeAcumulaciones y
-        % el de promociones (de forma condicional)
-        (canjesNoCambia(s_0,s)) \
-        \land \\ (referidosNoCambia(s_0,s)) \
-        \land \\ (transferenciasNoCambian(s_0,s)) \
-        \land \\ esSubSeq(s_0.historialDeAcumulaciones[u], s.historialDeAcumulaciones[u]) \\ % \land \\
-        \land modificacionSegunTope(u, millasVoladas, promo, s, s_0)
-%        miIfThenElse
-%(s.promociones[promo].tope = -1,
-%casoNoTope(u, millasVoladas, promo, s, s_0),
-%    \\ miIfThenElse
-%    (
-%        millasVoladas * s_0.promociones[promo].factor
-%        = s_0.promociones[promo].tope
-%    , \\ casoGastaElTopeDeLaPromo(u, millasVoladas, promo, s, s_0), \\ casoNoGastaElTopeDeLaPromo(u, millasVoladas, promo, s, s_0)))}
-        
-        % la siguiente expresion tiene esta Estructura
-        % ((P(a,b) land c) lor (no P(a,b) land d)) la cual es
-        % exactamente lo que hace un ifThenElse pero usando solo logica.
-        % si se cumple P(a,b), hace c
-        % si se cumple no P(a,b) (el caso contrario a P(a,b) que seria el else), hace d
-        % lo que equivale a if(P(a,b){ c } else { d })
-        % hice esto para no especificar COMO HACERLO (con ifThenElse)
-        % y especificar QUE HACE
-        % la siguiente expresion expresion es 1 solo predicado, o sea Q(x)
-        % empieza el if
-        
-        
-        %\land
-        %(
-        %    (
-        %        (millasVoladas * s_0.promociones[promo].factor)
-        %        \geq (s_0.promociones[promo].tope)
-        %        \land (\norm{s.promociones} = \norm{s_0.promociones} - 1)
-        %        \land s.promociones = listaDePromocionSinP(promo, s_0)
-        %        \land seAgregoVuelo(crearAcumulacion(millasVoladas, promo,
-        %            s_0.promociones[promo].factor,
-        %            s_0.promociones[promo].tope,
-        %            s_0.promociones[promo].tope + (millasVoladas * %factorDeCategoriaUsuario(u, s_0)))
-        %        )
-        %    )
-        %    \lor
-        %    (
-        %        % empieza el else
-        %        (millasVoladas * s_0.promociones[promo].factor)
-        %        < (s_0.promociones[promo].tope)
-        %        \land (\norm{s.promociones} = \norm{s_0.promociones})
-        %        \land (soloCambioLaPromoP(promo, s, s_0))
-        %        \land s.promociones[promo] = reducirTopeAPromoP(promo, s_0)
-        %        \land \norm{s.historialDeAcumulaciones[u]}
-        %                = \norm{s_0.historialDeAcumulaciones[u]} + 1
-        %        \land seAgregoVuelo(crearAcumulacion(millasVoladas, promo,
-        %            s_0.promociones[promo].factor,
-        %            millasVoladas * s_0.promociones[promo].factor,
-        %            (millasVoladas * factorDeCategoriaUsuario(u, s_0)
-        %                * s_0.promociones[promo].factor))
-        %        )
-        %    )
-        %)
-        
-\end{proc}
-
-
-\
-
-\predLargo{promoDisponeDeMillasParaVuelo}{
-u: Usuario,
-promo: nombrePromo,
-millasAVolar: \R,
-s: AirMiles
-}{
-(s.promociones[promo].tope = -1) \lor
-(millasAVolar*factorCategoria(u,s) * s.promociones[promo].factor) \leq (s.promociones[promo].tope)
-}
-
-\bigskip
-
-\predLargo{casoNoTope}{
-u: Usuario,
-millasVoladas: \R,
-promo: nombrePromo,
-s: AirMiles,
-s_0: AirMiles
-}{
-    promocionesNoCambia(s, s_0) \\
-    \land usuarioTiene1VueloMas(u, s, s_0) \\
-    % \land esSubSeq(s.historialDeAcumulaciones[u], s_0.historialDeAcumulaciones[u]) \\
-    \land seAgregoVuelo(crearAcumulacion(millasVoladas, promo, \\
-    millasVoladas * (factorDeCategoriaUsuario(u, s_0)) * s_0.promociones[promo]) , 
-    s,
-    s_0) \\
-    \land lasDemasAcumulacionesNoCambian(s, s_0, u)
-}
-
-\
-
-\predLargo{casoGastaElTopeDeLaPromo}{
-u: usuario,
-millasVoladas: \R,
-promo: nombrePromo,
-s: AirMiles,
-s_0: AirMiles
-}{
-    usuarioTiene1VueloMas(u, s, s_0) \\
-    % \land esSubSeq(s.historialDeAcumulaciones[u], s_0.historialDeAcumulaciones[u]) \\
-    \land seAgregoVuelo(crearAcumulacion(millasVoladas, promo, \\
-    millasVoladas * \big(factorDeCategoriaUsuario(u, s_0)\big) * s_0.promociones[promo]) ,
-    s, \\
-    %\land \norm{s.promociones[promo]} = \norm{s_0.promociones[promo]} - 1 \\
-    %\land s.promociones = listaDePromocionSinP(promo, s_0)} \\
-    seEliminaPromocion(s_0, s, promo) \\
-    \land lasDemasAcumulacionesNoCambian(s, s_0, u)}
-    % estoy sobre-especificando en el anterior predicado
-    % s.promociones = listaDePromocionSinP(promo, s_0) ?
-    % porque podria decir que s.promociones esSubDict de 
-    % s_0.promociones y que (promo \notin s.promociones)
-
-\
-
-\predLargo{casoNoGastaElTopeDeLaPromo}{
-u: usuario,
-millasVoladas: \R,
-promo: nombrePromo,
-s: AirMiles,
-s_0: AirMiles
-}{
-    usuarioTiene1VueloMas(u, s, s_0) \\
-    %\land esSubSeq(s.historialDeAcumulaciones[u], s_0.historialDeAcumulaciones[u]) \\
-    \land seAgregoVuelo(crearAcumulacion(millasVoladas, promo, \ millasVoladas * (factorDeCategoriaUsuario(u, s_0)) * s_0.promociones[promo]), s, \
-    \land \norm{s_0.promociones[promo]} = \norm{s.promociones[promo]} \
-    \land s.promociones[promo].tope = \ s_0.promociones[promo]
-        - (millasVoladas * s_0.promociones[promo].factor) \\
-    \land \norm{s.promociones} = \norm{s_0.promociones} \\
-    \land soloCambioLaPromoP(p, s, s_0) \\
-    \land lasDemasAcumulacionesNoCambian(s, s_0, u)}
-
-    % estoy sobre-especificando en el anterior predicado
-    % s.promociones = listaDePromocionSinP(promo, s_0) ?
-    % porque podria decir que s.promociones esSubDict de 
-    % s_0.promociones y que (promo \notin s.promociones)
-
-\bigskip
-
-\predLargo{usuarioTiene1VueloMas}{
-u: usuario, s: Airmiles, s_0: Airmiles}{
-    \norm{S.historialDeAcumulaciones[u]} = \norm{S_0.historialDeAcumulaciones[u]} + 1}
-
-\
-
-\predLargo{cantidadDeVuelosCorrecto}{
-u: Usuario, 
-s_0: AirMiles, 
-s: AirMiles}{
-    \norm{s[u]} = \norm{s_0[u]} + 1}
-
-% pred que quiza es util para alejandro
-
-%\auxLargo{listaDePromocionSinP}{
-%promo: \seq{\cha},
-%s: AirMiles
-%}{
-%\dict{\seq{\cha}}{parametrosPromo}
-%}{
-%    \paraTodo{p}{claves(s.promociones)}{(promo \neq p) \implies 
-%        (res.p = s.promociones[p])}    
-%}
-
-\
-
-% pred que quiza es util para alejandro
-
-\predLargo{soloCambioLaPromoP}{
-promo: \seq{char},
-s: AirMiles,
-s_0: AirMiles
-}{
-    (s.promociones[promo] \neq s_0.promociones[promo]) \\
-    \land \paraTodo{p}{claves(s_0.promociones)}{(promo \neq p) \implicaLuego
-        (s.promociones[p] = s_0.promociones[p])}
-}
-
-\
-
-% pred que quiza es util para felipe
-
-\predLargo{seAgregoVuelo}{
-vuelo: Acumulaciones,
-s: \seq{Acumulaciones},
-s_0: \seq{Acumulaciones}
-}{
-    %(vuelo \in s) \yLuego
-    (vuelo \in s) \land
-    (aparicionesEnSeqDe(vuelo, s) = aparicionesEnSeqDe(vuelo, s_0) + 1)
-}
-
-% en este caso no utilizo el yLuego para que no se indefina, lo utilizo
-    % para que se evalue primero que el vuelo existe en s y despues que se
-    % que existe, comparo las apariciones de vuelos en las dos secuencias
-    % para que sea la correcta, verificar esto con el profe si
-    % (vuelo \in s) deberia de ir en el asegura del proc acumularMillas
-    % en lugar de un pred <- Preguntar al profesor -Julio
-
-\bigskip
-
-% pred que quiza es util para felipe
-
-\auxLargo{crearAcumulacion}{
-distancia: \R,
-NombrePromo: \str,
-factor: \R,
-%\In millasPromo: \R,
-millasGanadas: \R
-}{Acumulacion}{
-    % crea el struct por extension
-    \struct{
-        distanciaVolada: distancia, \\
-        %"promo": \tupla{nombrePromo, factor, millasPromo} \\
-        promo: \tupla{NombrePromo, factor} \\
-        millasGanadas: millasGanadas
-    }
-}
-
-\
-
-\begin{proc}{resumenDeTransacciones}{
-\In u: Usuario,
-\In s: AirMiles
-}{\struct{total: \R, canjeadas: \R, enviadas: \R, recibidas: \R}}
-{
-    \requiere{usuarioEnSistema(s,u)}
-    \aseguraLargo{
-        (res.total = millasTotales(s,u)) \land \\
-        (res.canjeadas = sumaDeCanjes(u,s)) \land \\
-        (res.enviadas = sumaDeTransferenciasEnviadas(s,u)) \land \\
-        (res.recibidas = sumaDeTransferenciasRecibidas(s,u))
-    }
-}
-
-\end{proc}
-
-\
-
-\begin{proc}{transferirMillas}
-    {
-    \In origen: \Z ,
-    \In destino: \Z ,
-    \In monto: \R ,
-    \Inout S: \Tipo{AirMiles}
-    }{
-    }
-        \requiereLargo{
-            (s = s_0) \yLuego (usuarioEnSistema(s_0, destino)) \land
-            (usuarioEnSistema(s_0, destino)) \land
-            (origen \neq destino) \land
-            disponeDeMillas(origen, monto, s_0) \\
-            \land 
-        }
-        \aseguraLargo{
-        % el unico observador que cambia es el historialDeTransferencias
-        (promocionesNoCambia(s_0,s)) \land \\
-        (acumulacionesNoCambia(s_0,s)) \land \\
-        (canjesNoCambia(s_0,s)) \land \\
-        (referidosNoCambia(s_0,s)) \land \\
-        tamañoNuevoHistorialDeTransSuma1(s, s_0) \land \\
-        esSubSeq(s_0.historialDeTransferencias, s.historialDeTransferencias) \land \\
-        seAgregoTrans(
-            \struct{origen: origen, destino: destino, cantidad: monto}, \\
-            s_0.historialDeTransferencias,
-            s.historialDeTransferencias
-        )
-        }
-    \end{proc}
-
-\
-
-\predLargo{tamañoNuevoHistorialDeTransSuma1}{\In s: Airmiles, \In s_0: Airmiles}{
-    \norm{S.historialDeTransferencias} = \norm{S_0.historialDeTransferencias} + 1
-}
-
-\
-
-\predLargo{seAgregoTrans}{trans: Trans,S_0: historialDeTransferencias,S : historialDeTransferencias
-}{
-    (trans \in S) \\
-    \land ((aparicionesEnSeqDe(trans, S_0) + 1 = aparicionesEnSeqDe(trans, S)))
-}
-
-% hace falta un operador Yluego que verifique primero que la trans existe
-    % en S para luego calcular cuantas veces ocurre? o los operadores 
-    % LUEGO solo se utilizan exclusivamente para que no se indefina una 
-    % expresion logica? <- para preguntar en la practica - Julio
-
-\
-
-% Terminan los procs de julio junto con los preds y aux especificos de
-% sus procs -Julio 
-
-
-%  EMPIEZAN NUEVOS AUX Y PREDS GENERALES UTILES PARA LOS NUEVOS OBSERVADORES 
-%  QUE DEFINIMOS EL VIERNES 4/9/2026 EN EL LABO -Julio
-
-\
-
-% quiza verificar que |S0| <= |S| es sobre especificar, pues si el proc
-% que utiliza esSubSeq tambien verifica en el requiere algo como |S0| <= |S|
-% se repite 2 veces la expresion |S0| <= |S|, para pensar -Julio
-
-
-\predLargo{miIfThenElse}{predicado: bool,Then: bool,Else: bool}{(predicado \land Then) \lor (\neg predicado \land Else)}
-
-\predLargo{esSubSeq}{
-\In S_0: \seq{T},
-\In S: \seq{T}
-}{
-    (\norm{S_0} \leq \norm{S}) \\
-    \yLuego \paraTodo{i}{\Z}{ (0 \leq i < \norm{S_0}) \implicaLuego (S_0[i] = S[i])}
-}
-
-\
-
-% util para el requiere de muchos procs
-
-\pred{existePromo}{
-promo: nombrePromo,
-s: AirMiles
-}{
-    (promo \in s.promociones)
-}
-
-\
-
-% Util para los procs transferirMillas y canjearMillas
-
-\predLargo{disponeDeMillas}{
-u: Usuario,
-millas: \R,
-s: AirMiles
-}{
-    millasDisponibles(s,u) \geq millas
-}
-
-\
-
-% verifica cuantas veces se repite el elemento e de tipo T (lo que sea)
-% en una secuencia de tipo T (mismo tipo que e)
-\auxLargo{aparicionesEnSeqDe}{
-e: T,
-s: \seq{T}
-}{
-\Z
-}{
-\sum_{i=0}^{\norm{s} -1}{ifThenElse(s[i] = e , 1, 0)}
-}
-
-\bigskip
-
-\
-
-
-
-
-%  TERMINAN NUEVOS AUX Y PREDS GENERALES UTILES PARA LOS NUEVOS OBSERVADORES 
-%  QUE DEFINIMOS EL VIERNES 4/9/2026 EN EL LABO -Julio
-
-% ============================================================
-% Predicados auxiliares para verificar la modificación
-% según el tope de la promoción
-% ============================================================
-
-\predLargo{promoNoTieneTope}
-{
-    promo: nombrePromo,
-    s_0: AirMiles
-}
-{
-    s_0.promociones[promo].tope = -1
-}
-
-\bigskip
-
-\predLargo{usuarioGastaElTopeDeLaPromo}
-{
-    millasVoladas: \R,
-    promo: nombrePromo,
-    s_0: AirMiles
-}
-{
-    millasVoladas
-    \cdot
-    s_0.promociones[promo].factor
-    =
-    s_0.promociones[promo].tope
-}
-
-\bigskip
-
-\predLargo{modificacionSegunTope}
-{
-    u: Usuario,
-    millasVoladas: \R,
-    promo: \seq{\cha},
-    s: AirMiles,
-    s_0: AirMiles
-}
-{
-    miIfThenElse(
-        promoNoTieneTope(promo,s_0),
-        casoNoTope(u,millasVoladas,promo,s,s_0),
-        \\ miIfThenElse(
-            usuarioGastaElTopeDeLaPromo(
-                millasVoladas,
-                promo,
-                s_0
-            ),
-            casoGastaElTopeDeLaPromo(
-                u,
-                millasVoladas,
-                promo,
-                s,
-                s_0
-            ),
-            casoNoGastaElTopeDeLaPromo(
-                u,
-                millasVoladas,
-                promo,
-                s,
-                s_0
-            )
-        )
-    )
-}
-
-\predLargo{elReceptorTendraMenosMillasDisponiblesQueTotales}
 
 \end{tad}
-
-\section{borrador}
-
-Suposiciones:
-
-Si acumulas o canjeas, el destino y origen es uno mismo
-
-tope -1 es decir que no tiene tope
-
-Suponemos que ganar por referencia = ganar por viaje -> transaccionAcumular.
-
-millas acumuladas/totales: todo lo que ganaste
-millas disponibles/actuales: son las actuales
-
-\begin{itemize}
-\item tipoDeTransaccion = enum(transferencia, acumular, canjear)
-
-\item categorias = enum(bronce,plata,oro,platino)
-\end{itemize}
-
-
-Ejemplo/Testing:
-
-constructor crearSistema()
-
-registrarUsuario(ID) -> historialTransaccion(id, 0,0,0,0)
-
-registrarUsuarioConReferidor -> historialTransaccion(id, 500,...)
 
 \end{document}
