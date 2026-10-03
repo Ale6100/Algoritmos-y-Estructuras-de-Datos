@@ -1,0 +1,29 @@
+Orden recomendado para el Taller 4 (de más fácil a más difícil)
+================================================================
+
+1. PilaSobreArreglo.java
+   - Un arreglo y un índice "size".
+   - push: arr[size++] = elem
+   - pop:  return arr[--size]
+   - isFull: size == capacity
+
+2. PilaSobreListaEnlazada.java
+   - Un único puntero "head"; todo se hace al principio de la lista.
+   - push: nuevo nodo que apunta al head viejo.
+   - pop:  head = head.next
+   - isFull: siempre false.
+
+3. ColaSobreListaEnlazada.java
+   - Dos punteros: "head" y "tail".
+   - Encolar por tail, desencolar por head.
+   - Cuidado:
+     * Al encolar en una cola vacía, actualizar head y tail.
+     * Al desencolar el último elemento, tail también queda en null.
+
+4. ColaSobreArregloCircular.java
+   - Índices head y tail que dan la vuelta con % capacity.
+   - Lo difícil: distinguir cola vacía de cola llena (en ambos casos head == tail).
+   - Lo más simple: llevar un contador "size" aparte.
+
+Tip: antes de cada uno, mirar su test en src/test/java/aed/ para ver qué se espera
+en los casos borde (por ejemplo, pop/dequeue sobre una estructura vacía).
