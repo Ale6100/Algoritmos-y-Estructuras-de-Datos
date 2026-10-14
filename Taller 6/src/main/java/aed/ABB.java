@@ -1,20 +1,28 @@
 package aed;
-
-import java.util.*;
-
-// Todos los tipos de datos "Comparables" tienen el método compareTo()
 // elem1.compareTo(elem2) devuelve un entero. Si es mayor a 0, entonces elem1 > elem2
-public class ABB<T extends Comparable<T>> {
-    // Agregar atributos privados del Conjunto
+public class ABB<T extends Comparable<T>> implements Conjunto<T> {
+    private Nodo _raiz;
+    private int _cardinal;
+    private int _altura;
 
     private class Nodo {
-        // Agregar atributos privados del Nodo
+        T valor;
+        Nodo izq;
+        Nodo der;
+        Nodo padre;
 
-        // Crear Constructor del nodo
+        Nodo(T v) {
+            this.valor = v;
+            this.izq = null;
+            this.der = null;
+            this.padre = null;
+        }
     }
 
     public ABB() {
-        throw new UnsupportedOperationException("No implementada aun");
+        this._raiz = null;
+        this._cardinal = 0;
+        this._altura = 0;
     }
 
     public int cardinal() {
