@@ -11,7 +11,7 @@
 
 
 \titulo{Trabajo práctico 1: TAD airMiles.}
-\subtitulo{Especificación del TAD airMiles: sistema de fidelización de una aerolinea.}
+\subtitulo{Especificación del TAD airMiles: sistema de fidelización de una aerolínea.}
 
 \fecha{\today}
 
@@ -65,9 +65,9 @@ En el asegura del proc registrarUsuario hicimos un predicado seAgregoUsuario(s,u
 
 El historial de transacciones del sistema es global y no discrimina por usuario, por lo tanto, no se modifica al registrar un usuario. Lo mismo sucede con las promociones, ya que no tienen relación con el registro de un usuario. Esta aclaración la hacemos dado que el enunciado pide explícitamente que las transacciones del usuario se inicien vacías, pero nuestras transacciones no están discriminadas por un usuario particular, sino que contemplan a los dos involucrados. Por lo tanto, no dependen de un único usuario y no pueden inicializarse como vacías para cada usuario, dado que las planteamos de manera diferente.
 
-En esta línea, el enunciado dice que en todo momento debe garantizarse que las millas disponibles de un usuario no superen sus millas totales, pero por construcción, millasDisponibles = millasTotales - millasPerdidas, por lo tanto siempre ocurre que $millasDisponibles \leq millasTotales$, entonces no hace falta estar verificando continuamente predicados sobre auxiliares dado que están construídos de forma tal que se respeten las consignas del enunciado. Por otro lado, para cumplir que las operaciones que modifican el sistema deben preservar la integridad de los saldos (ningún usuario puede tener saldo negativo), verificamos que las millasDisponibles sean suficientes para realizar la transferencia o canje. Para que se respete que los identificadores de usuario sean números enteros positivos se requieren positivos para ser válidos como entrada, entre otros casos. De esta manera nos aseguramos respetar estos puntos por construcción.
+En esta línea, el enunciado dice que en todo momento debe garantizarse que las millas disponibles de un usuario no superen sus millas totales, pero por construcción, millasDisponibles = millasTotales - millasPerdidas, por lo tanto siempre ocurre que $millasDisponibles \leq millasTotales$, entonces no hace falta estar verificando continuamente predicados sobre auxiliares dado que están construidos de forma tal que se respeten las consignas del enunciado. Por otro lado, para cumplir que las operaciones que modifican el sistema deben preservar la integridad de los saldos (ningún usuario puede tener saldo negativo), verificamos que las millasDisponibles sean suficientes para realizar la transferencia o canje. Para que se respete que los identificadores de usuario sean números enteros positivos se requieren positivos para ser válidos como entrada, entre otros casos. De esta manera nos aseguramos respetar estos puntos por construcción.
 
-Decidimos poner la palabra tupla antes de las tuplas dado que el símbolo de tuplas, structs, y secuencias son idénticos y no habría forma de diferenciarlos salvo contexto, especialmente para las tuplas puede resultar confuso por lo que agregamos explicitamente la palabra tupla antes de una tupla.
+Decidimos poner la palabra tupla antes de las tuplas dado que el símbolo de tuplas, structs, y secuencias son idénticos y no habría forma de diferenciarlos salvo contexto, especialmente para las tuplas puede resultar confuso por lo que agregamos explícitamente la palabra tupla antes de una tupla.
 
 Hay un error en el enunciado de acumularMillas: si un usuario tiene millas totales mayores o iguales a 50.000, se considera de categoría Oro con su factor asociado, y si un usuario tiene millas totales mayores o iguales a 1.000.000, es de categoría Platino. Ahora bien, si un usuario supera o iguala las 1.000.000 millas totales, el usuario es Oro y Platino al mismo tiempo, lo cual sabemos que no es posible, ya que un usuario no puede estar en dos categorías diferentes al mismo tiempo. Tomamos la decisión de resolver este inconveniente del enunciado imponiendo que el factor Oro para el usuario sea válido cuando tenga menos de 1.000.000 de millas totales.
 
@@ -75,7 +75,7 @@ En transferirMillas encontramos un error de enunciado: dos usuarios pueden trans
 
 En cuanto al tope de una promo, decidimos hacer lo siguiente: tener un tope igual a -1 significa que no hay tope. Esto lo podemos utilizar, por ejemplo, cuando creamos el sistema con el nombre de la promoción No Promo, o cuando creamos una promoción sin tope. El tope es un número que va bajando a medida que los usuarios vuelan con la promoción y acumulan millas, haciendo: $tope - acumuladoGlobalDeMillasConEsaPromo$ \ hasta llegar a 0. Mientras baja el tope, la promoción está activa y, cuando llega a 0, se elimina del sistema. Tomamos la decisión de validar en el requiere que las millas a volar no superen el tope de la promoción: si el vuelo supera el tope de la promoción, no puede realizarse con esa promoción.
 
-\section{Especificacion del TAD airMiles}
+\section{Especificación del TAD airMiles}
 
 $/*$ Por sugerencia del corrector, para no repetir en cada proc que los observadores no involucrados no sufren modificaciones, dada nuestra construcción de observadores, usamos el predicado losDemasObservadoresNoCambian$(s,S_0)$ de forma flexible para indicar ese comportamiento y resumir los predicados del tipo: $s.observador = S_0.observador$ (excepto el/los que sí cambian) $/*$
 
@@ -228,8 +228,7 @@ $/*$ Por sugerencia del corrector, para no repetir en cada proc que los observad
     }
 
     \aseguraLargo{
-        s.acu = setKey(S_0.acu, u, S_0.acu[u] ++ \\ \struct{distanciaVolada, tupla\tupla{p, S_0.promos[p].factor}, millasGanadas(S_0,distanciaVolada,p,u)})
-        \ \land \\
+        s.acu = setKey(S_0.acu, u, S_0.acu[u] ++ \\ \struct{distanciaVolada, tupla\tupla{p, S_0.promos[p].factor}, millasGanadas(S_0,distanciaVolada,p,u)})\land \\
         \big(promoNoTieneTope(p,s,S_0) \lor \\
     casoGastaElTopeDeLaPromo(u,distanciaVolada,p,s,S_0) \lor \\
     casoModificaElTopeDeLaPromo(u,distanciaVolada,p,s,S_0) \big) \land \\ losDemasObservadoresNoCambian(s,S_0)
@@ -513,7 +512,7 @@ s: airMiles
         \requiereLargo{
             \norm{nombre} > 0 \land
             nombre \neq "NoPromo" \land
-            nombre \in s.promos \land
+            existePromo(nombre,s) \land
             s = S_0
         }
         \aseguraLargo{
@@ -546,11 +545,15 @@ s: airMiles
 
         \requiereLargo{|claves(s.acu)| > 0}
 
-        \aseguraLargo{res \in claves(s.acu) \yLuego (\forall k: usuario)(k \in \\ 
-        claves(s.acu) \implicaLuego (millasPerdidas(k,s) \leq millasPerdidas(res,s)))
+        \aseguraLargo{usuarioEnSistema(s, res) \yLuego tieneMasPerdidasQueLosDemas(res,s)
         }
 
     \end{proc}
+    
+    \bigskip
+    
+    \predLargo{tieneMasPerdidasQueLosDemas}{res:usuario, s:airMiles}{(\forall u: usuario)(u \in 
+        claves(s.acu) \implicaLuego (millasPerdidas(u,s) \leq millasPerdidas(res,s)))}
     
     \bigskip
 
@@ -581,14 +584,14 @@ s: airMiles
 {
     (\exists i:\Z)(
         0 \leq i < |s.transf|
-        \ \yLuego \\
+        \ \yLuego
         (
             (s.transf[i].origen = a
-            \land \\
+            \land
             s.transf[i].destino = b)
             \ \lor \\
             (s.transf[i].origen = b
-            \land \\
+            \land
             s.transf[i].destino = a)
         )
     )
@@ -603,7 +606,7 @@ s: airMiles
 {
     (\forall i:\Z)(
         0 \leq i < |s.transf|
-        \ \implicaLuego \\
+        \ \implicaLuego
         (
             s.transf[i].origen = a
             \implica
