@@ -1,6 +1,6 @@
 package aed;
 // elem1.compareTo(elem2) devuelve un entero. Si es mayor a 0, entonces elem1 > elem2
-public class ABB<T extends Comparable<T>> implements Conjunto<T> {
+public class ABB<T extends Comparable<T>> {
     private Nodo _raiz;
     private int _cardinal;
 
@@ -318,7 +318,7 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
             this._actual = ABB.this.devolver(ABB.this.minimo());
         }
 
-        // public boolean haySiguiente() {
+        // public boolean haySiguiente() { // Debí haberlo usado #perobuenoyafue
         //     //
         // }
 
