@@ -1,0 +1,360 @@
+{
+  "version": 1,
+  "files": {
+    "Apuntes/Apunte - Especificación de problemas.pdf": {
+      "sha256": "a105d5ee220b8fee945d8edfd0cd55b32bb6b447a0b11493be5b2959044a363a",
+      "size": 264224,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123992"
+    },
+    "Apuntes/Apunte - TADs.pdf": {
+      "sha256": "041b3d65757c1b3672c5f39e64ff99a4b25bbddd6a6998dc93bf3c492aa012dc",
+      "size": 194705,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123993"
+    },
+    "Apuntes/Apunte - TADs y módulos básicos.pdf": {
+      "sha256": "6996e1c78f091bae6e51afbc0a18d127cc5225c8d3fe572be6b3cd55079b6d04",
+      "size": 259351,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123994"
+    },
+    "Práctica/Práctica - Clase 1 - Introducción y Lógica.pdf": {
+      "sha256": "18dec76af7e81f38df58c1f3111f1fd4ef7d969b11987c9fd260a10d11d94422",
+      "size": 384033,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123888"
+    },
+    "Práctica/Práctica - Clase 2 - Especificación.pdf": {
+      "sha256": "3188243a8ebc6af23fbbe609d11ff9cb2140049cd904d39cf63f105d772f3a13",
+      "size": 1560883,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123890"
+    },
+    "Práctica/Práctica - Clase 3 - Tipos Abstractos de Datos.pdf": {
+      "sha256": "384e8fd4000db4d36aae45707ffd1cedb9d85cd5136216a579a1f646770ad077",
+      "size": 171160,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123893"
+    },
+    "Práctica/Práctica - Clase 3 - TADs (TN).pdf": {
+      "sha256": "659d32df2ba04a8d9be50f0c6eda69b6ed0885b15dede8a4a33853c4f4411777",
+      "size": 1485237,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=133552"
+    },
+    "Práctica/Práctica - Ejercicios resueltos.pdf": {
+      "sha256": "8660783955fbae76adf1ebdc5ee3034e7195ce51c032173096b82fc4be371618",
+      "size": 180972,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123894"
+    },
+    "Práctica/Práctica - Clase 4 - Enunciados.pdf": {
+      "sha256": "664973273889a115fb8ff49962813132a391819af5657d9ebf7ffa4bd2305feb",
+      "size": 93313,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=133696"
+    },
+    "Práctica/Práctica - Clase 4 - Ejercicios resueltos.pdf": {
+      "sha256": "da4c126acab54eedd5085dc0dd3e43a8d9fe91bf3fbb3284e16dda38c0a6f810",
+      "size": 210441,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123895"
+    },
+    "Práctica/Práctica - Clase 5 - Verificación de programas (WP).pdf": {
+      "sha256": "a19e3711454a52b40477611877e2d455e4355286acdf96bf868df19fa4f6681a",
+      "size": 2456152,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123896"
+    },
+    "Práctica/Práctica - Clase 6 - Correctitud de ciclos.pdf": {
+      "sha256": "01d80a3ecdd88e3d73b3a12bf36bed0b30de415fe4fdb2d40e8fc255d6ffff1d",
+      "size": 406954,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123898"
+    },
+    "Práctica/Práctica - Clase 8 - Complejidad.pdf": {
+      "sha256": "2dbecf7e0d1085917ab53b20b90b3ef4c40599640e501050091e50102a0b05cf",
+      "size": 355048,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123902"
+    },
+    "Práctica/Práctica - Clase 9 - Invariante de Representación y Función de Abstracción.pdf": {
+      "sha256": "d6ded6fe7b79ff395674fb1036193e8368d54c400980347f6e45738def3beb0a",
+      "size": 485466,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123904"
+    },
+    "Práctica/Práctica - Ejercicios clase rep-abs.pdf": {
+      "sha256": "535d46a70428f9581ebc5cde69220ec95f92dd6dc1fdde08f2bc84c1c1f2514b",
+      "size": 109129,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123905"
+    },
+    "Práctica/Práctica - Resolucion ejercicios.pdf": {
+      "sha256": "26365da03d86372433a8b6288346221155f6396d418b6babdf41e543264b5604",
+      "size": 5063291,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123906"
+    },
+    "Práctica/Práctica - Clase 10 - Diseño y Estructuras - Enunciados.pdf": {
+      "sha256": "03d7fae6967a8a8a1d114c50bf6d21facb6accf7020296e797cacb8a66bb8eb2",
+      "size": 127652,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123907"
+    },
+    "Práctica/Práctica - Clase 11 - Diseño - Diapositivas.pdf": {
+      "sha256": "90513774a8758b61c967c2a1e289d2d182211cf70792aa511e5594424cf225b1",
+      "size": 184058,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123908"
+    },
+    "Práctica/Práctica - Clase 11 - Enunciados y resueltos.pdf": {
+      "sha256": "e490bc5bd187ed226eadca76a1d1846310199dab157164f2a086d93491fe97ce",
+      "size": 249928,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123909"
+    },
+    "Práctica/Práctica - Clase 12 - Sorting TM.pdf": {
+      "sha256": "acfe62fa272662d9a7f46793bf3ff58b5f3fa6d71224058d2b36f837e721f0f8",
+      "size": 1276961,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=140607"
+    },
+    "Práctica/Práctica - Clase 12 - Sorting - Resuelto de ejercicios de la clase.pdf": {
+      "sha256": "d8fc7b7dec297c7a375bc92b6dcb91826ac338ab6c3e1c6f92d3ac34ae59163c",
+      "size": 309614,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=140608"
+    },
+    "Práctica/Práctica - Clase 12 - Sorting TT.pdf": {
+      "sha256": "2694e2de0bf0a44a3bde491ae890af48e37c69e372123fb5f828c5b51b47aaff",
+      "size": 525267,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=140595"
+    },
+    "Práctica/Práctica - Clase 12 - Sorting TN.pdf": {
+      "sha256": "f868e0da087c547a15e2f7e43559540751773854142b66f25daa0a79c1befef3",
+      "size": 1219137,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=140672"
+    },
+    "Práctica/Práctica - Clase 13 - Simulacro de parcial.pdf": {
+      "sha256": "a65997edb0281095beacc648cb0341225516cb541c9a8994d9d86b87c01ef10e",
+      "size": 260364,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123910"
+    },
+    "Práctica/Práctica - Guía 1 - Lógica.pdf": {
+      "sha256": "df2eafd9e5b7cd40e10708dcd4a8c5f5358e18f06fa1b481b96eb4a280a36307",
+      "size": 142111,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123947"
+    },
+    "Práctica/Práctica - Guía 1 - Lógica (soluciones).pdf": {
+      "sha256": "f94b58ed0ffb3bc98d5bfd6aeb841cd608fb26bd6ab20cc4fa555c12800402ff",
+      "size": 191866,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123948"
+    },
+    "Práctica/Práctica - Guía 2 - Especificación de problemas.pdf": {
+      "sha256": "8efbf379e56f80015be607f97e55be59cc04b0c484a057d500f01335b936151e",
+      "size": 193718,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123949"
+    },
+    "Práctica/Práctica - Guía 2 - Especificación de problemas (soluciones).pdf": {
+      "sha256": "03c6ea87291eefeb0ce2243721823d31b2732d17b3f52febe0c147d6aea0f915",
+      "size": 265618,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123950"
+    },
+    "Práctica/Práctica - Guía 2 bis - Especificación de problemas (ejercicios extra).pdf": {
+      "sha256": "76beefb045247d42a6a963e2dc6e37eca2efb6381f8a99bcf17a5d8b37e165db",
+      "size": 185233,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=131683"
+    },
+    "Práctica/Práctica - Guía 2 bis - Especificación de problemas (ejercicios extra) (soluciones).pdf": {
+      "sha256": "db878896dd396a8857b071fbb96cefbbdf5f5bec2e92430bc2703da1edd34a2f",
+      "size": 220162,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=131684"
+    },
+    "Práctica/Práctica - Guía 3 - TADs.pdf": {
+      "sha256": "4983a712acbe6a301978dccd12e58ecbdb54c609cc07529069fb9929b829758a",
+      "size": 215609,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123951"
+    },
+    "Práctica/Práctica - Guía 3 - TADs (resueltos).pdf": {
+      "sha256": "f80d64ef4d3eb86713d7cff2433b7047ef292e235c5d3a6f69788cb46c2dc82f",
+      "size": 332901,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123952"
+    },
+    "Práctica/Práctica - Guía 4 - Correctitud de programas.pdf": {
+      "sha256": "833d48af0c30b2798acf49449edf8038770792b3affa485b3c6a9cfe780ecb07",
+      "size": 264818,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123953"
+    },
+    "Práctica/Práctica - Guía 4 - Correctitud de programas (resueltos).pdf": {
+      "sha256": "f5d7d640132962860e59291cdbf23098161f2f3c2a3454d06e73bc8b3e3ca137",
+      "size": 379726,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123954"
+    },
+    "Práctica/Práctica - Guía 5 - Complejidad.pdf": {
+      "sha256": "e35879b75c92c9bef97f93add175326f96fde70160679ccb10f827e6deef49d6",
+      "size": 168531,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123955"
+    },
+    "Práctica/Práctica - Guía 5 - Complejidad (resueltos).pdf": {
+      "sha256": "fd1ae14a83836ca05c3e5a6368af2aebfd8a000f0b69371df62c93d5ee3cb377",
+      "size": 251698,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=138541"
+    },
+    "Práctica/Práctica - Guía 6 - Rep-Abs.pdf": {
+      "sha256": "fa64789ac594952f9d8c9f21d990603ddb3398325a245ed632b41d9da39e7efe",
+      "size": 172978,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123956"
+    },
+    "Práctica/Práctica - Guía 6 - Rep-Abs (resuelto).pdf": {
+      "sha256": "a4c8a20a16e278946fd85950b4eb1a248fd652831f60e74d8fa8a0e4693cc21f",
+      "size": 225428,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=138828"
+    },
+    "Práctica/Práctica - Guía 7 - Diseño y elección de estructuras.pdf": {
+      "sha256": "62048117ba2d99e64251ad2bbe1462ae8d3e357132fb55216306e772ce6ff09c",
+      "size": 248250,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123957"
+    },
+    "Práctica/Práctica - Guía 7 - Diseño y elección de estructuras (resuelto).pdf": {
+      "sha256": "a2499c70e5420b90206cd20444d3efa8535a932784b510049b1b78402ef180c7",
+      "size": 289369,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=140492"
+    },
+    "Práctica/Práctica - Guía 8 - Ordenamiento.pdf": {
+      "sha256": "e41f256b577f0cfbfc010a294c080d7275d37a5f44a720bda5dad2a45ca7146f",
+      "size": 216562,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123958"
+    },
+    "Práctica/Práctica - Guía 8 - Ordenamiento (resuelto).pdf": {
+      "sha256": "742f8e45b63662899b88302a64868af1fdfeaea929c434e1aba3f1515f0b4724",
+      "size": 315478,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=140770"
+    },
+    "Teórica/Teórica - T0 - Presentación de la Materia.pdf": {
+      "sha256": "6537eadde27f18a138ad0603368f6255d9cfacb5ff53d6970a40fd65e5c994aa",
+      "size": 1531663,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123914"
+    },
+    "Teórica/Teórica - T1.1 Repaso de Lógica Proposicional (No se dicta en clase, se asume que lo saben).pdf": {
+      "sha256": "c1f286fe9e272b167f26a9433249b16b9f7318620ad9f002b69d2333430227a7",
+      "size": 147508,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123915"
+    },
+    "Teórica/Teórica - T1.2 Logica de Primer Orden y Trivaluada.pdf": {
+      "sha256": "a6f5d625a36a7f28ea2dccfd35c4e207a5800d78dedb241e692017e73dbcb27c",
+      "size": 274621,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123916"
+    },
+    "Teórica/Teórica - T2. Especificaciones y Contratos.pdf": {
+      "sha256": "07164c96e19a2ca255e1fdf916c6b4e6140dc9bfc68a6208de1d729d02d476c4",
+      "size": 250455,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123917"
+    },
+    "Teórica/Teórica - T3 - Tipos Abstractos de Datos.pdf": {
+      "sha256": "12967ed2341e5e3d123c65ecb9f2c7c8d79e9830d1f158be9767b3cb1ee276c4",
+      "size": 198927,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123918"
+    },
+    "Teórica/Teórica - T4 - Correctitud de Programas.pdf": {
+      "sha256": "225bab44234c312b6bb49101194cd64b1faa36ed8e30db12c1b4d5ec4caa8d84",
+      "size": 1019902,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123919"
+    },
+    "Teórica/Teórica - T5 - Corrección de Ciclos.pdf": {
+      "sha256": "d8600b55299e1f445407f0c2464a9948d676d223286d0f40c798e9c86eef8b0c",
+      "size": 275959,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123920"
+    },
+    "Teórica/Teórica - T6 - Algoritmos e Invariantes.pdf": {
+      "sha256": "a0243972aac995612cd477ed95ef6d4b9fc2265c629433e54ee04ee22244ad8b",
+      "size": 260460,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123921"
+    },
+    "Teórica/Teórica - T7 - Complejidad Algorítmica.pdf": {
+      "sha256": "8784813cca8e2b5a187d80fdb77667115c09dd2dfe9f617d8f0c2a19f9ddc031",
+      "size": 374274,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123922"
+    },
+    "Teórica/Teórica - T8 - Diseño de TADs.pdf": {
+      "sha256": "595bab2a1e854af2341796919d506f4d45724f2180aca7ebdf934962294edb81",
+      "size": 355151,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123924"
+    },
+    "Teórica/Teórica - T9 - Diseño de Conjuntos y Diccionarios (Arboles Binarios de Búsqueda y AVLs).pdf": {
+      "sha256": "383b19b320142bb787db9dbe6809fc5eb8328eeaa53625e0138e432646d40c1e",
+      "size": 2052042,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123925"
+    },
+    "Teórica/Teórica - T10 - Colas de prioridad y heaps.pdf": {
+      "sha256": "12061f5b6eefc16831a044151f1255b09878d5b582e0c537e9872af6aa254a28",
+      "size": 1577018,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123926"
+    },
+    "Teórica/Teórica - T11 - Tries.pdf": {
+      "sha256": "1c90c6b3825069d99bd3bedf8566f1b3ea0e621c15a8f3ebba891807b8c3bab4",
+      "size": 441193,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123927"
+    },
+    "Teórica/Teórica - T12-Hash.pdf": {
+      "sha256": "62176fc0e9de7601636e31ea9e2f27439d83a58f101cfcb59784636db56f5d5a",
+      "size": 555682,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123928"
+    },
+    "Teórica/Teórica - T13-Sorting.pdf": {
+      "sha256": "36f9bdfe8ca912403a494fa6fc19214f270543a7ef1d86b5e3fc95c798e981e3",
+      "size": 1683502,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123929"
+    },
+    "Laboratorio/Laboratorio - L01 - Introducción al laboratorio.pdf": {
+      "sha256": "08332c38675435a7492939d552eb81b61e2217898c6acd492b3af76458d3b84b",
+      "size": 5705880,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123932"
+    },
+    "Laboratorio/Laboratorio - L03 - Memoria (dinámica).pdf": {
+      "sha256": "ea73fab6371294ada67135656b6481940179ce7d5064a2f649a5991cd19895a0",
+      "size": 1292932,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123936"
+    },
+    "Laboratorio/Laboratorio - L04 - Listas e iteradores.pdf": {
+      "sha256": "c8517c7dd019a6016072a8fd956f8b47839837f49b623d73f728cc91a69db549",
+      "size": 239002,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123937"
+    },
+    "Laboratorio/Laboratorio - L05 - Pilas y colas.pdf": {
+      "sha256": "2a6781b396fc646ad33a2051830914be84166238b75a822f813fdc72c1e1c2c4",
+      "size": 3615932,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=135825"
+    },
+    "Laboratorio/Laboratorio - L06 - Resolución de problemas enlazando distintas estructuras.pdf": {
+      "sha256": "b5cca36a211db2b790986052254fc6939bcb7cd72d028b1b36801e79fe78a0b6",
+      "size": 325321,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123939"
+    },
+    "Laboratorio/Laboratorio - L07 - Conjuntos sobre ABBs.pdf": {
+      "sha256": "06bc61b6035c5f6ae61d1ca56b63f1df4bc14aebb77dbaac083353c8599d6e0f",
+      "size": 250027,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123938"
+    },
+    "Laboratorio/Laboratorio - L08 - Heap.pdf": {
+      "sha256": "2c97c887d4dc1b517dfa5a00bf6cf19b048007a0e912ffde1e91418271abfb4b",
+      "size": 346383,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=139521"
+    },
+    "Laboratorio/Laboratorio - Taller 1 - Enunciado.pdf": {
+      "sha256": "e50b1fbcd28aa28a5c06e83433d73b18ffccbd6e03d272a373f6490acb787939",
+      "size": 184429,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123972"
+    },
+    "Laboratorio/Laboratorio - Taller 2 - POO - Enunciado.pdf": {
+      "sha256": "0aeb44489fc32979cd491966bce53800470978cc0e05a00400ab14bc64110227",
+      "size": 110348,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123976"
+    },
+    "Laboratorio/Laboratorio - Taller 3 - Listas enlazadas e iteradores - Enunciado.pdf": {
+      "sha256": "b282583f2cb0dd59cf1eae508233b3a420cf3268eed00449e11c24223f432d3a",
+      "size": 257027,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123981"
+    },
+    "Laboratorio/Laboratorio - Taller 5 - Estructuras enlazadas - Enunciado.pdf": {
+      "sha256": "a5256ea92675a263c3a6c2eed75d669abd56289fb4d24b22b2eb2e62cb6a2fb0",
+      "size": 289980,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123989"
+    },
+    "Laboratorio/Laboratorio - Taller 6 - Conjunto sobre ABB - Enunciado.pdf": {
+      "sha256": "0f9ac11175db6393ee3afb2799526b36bfc64f4cec0f84008e9402d76f2ea6ff",
+      "size": 119656,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123985"
+    },
+    "Laboratorio/Laboratorio - TP 1.pdf": {
+      "sha256": "a1b3283ebad6c921e877aeac74e2469ffad29fff7e2e7ad1cb5c15d60ff5b261",
+      "size": 165441,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123962"
+    },
+    "Laboratorio/Laboratorio - TP 2.pdf": {
+      "sha256": "fdf3839be1f81a1ab5693f500dd1f42928593d5b5a89edd7a503a6cbf801e011",
+      "size": 121531,
+      "url": "https://campus.exactas.uba.ar/mod/resource/view.php?id=123967"
+    }
+  }
+}
