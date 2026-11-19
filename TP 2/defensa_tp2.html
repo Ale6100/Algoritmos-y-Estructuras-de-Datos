@@ -1,0 +1,339 @@
+<title>Detalles no triviales TP2</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  /* Layout: documento de una columna armado como preguntas de la defensa, cada una con su respuesta corta.
+     Arriba el esquema y un ejemplo de operación; abajo complejidades, puntos delicados y consejos. */
+  :root {
+    --bg: #ffffff;
+    --surface: #f2f5f6;
+    --ink: #15202a;
+    --muted: #55636e;
+    --line: #d6dde2;
+    --accent: #0b6b6b;
+    --accent-soft: #e3f2f1;
+    --warn: #8a4f00;
+    --warn-soft: #fff3de;
+    --code: #e9eef0;
+    --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --font-head: "Space Grotesk", "Inter", system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, Consolas, "Courier New", monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #11171c; --surface: #1a2229; --ink: #e5ebee; --muted: #98a6b0; --line: #2b3640;
+      --accent: #56c4c2; --accent-soft: #15292b; --warn: #f0b560; --warn-soft: #2b2314; --code: #202a32;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #11171c; --surface: #1a2229; --ink: #e5ebee; --muted: #98a6b0; --line: #2b3640;
+    --accent: #56c4c2; --accent-soft: #15292b; --warn: #f0b560; --warn-soft: #2b2314; --code: #202a32;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.55;
+    padding-block: 28px 48px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  main { max-width: 860px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
+
+  header { border-bottom: 2px solid var(--ink); padding-bottom: 14px; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  h1 { font-family: var(--font-head); font-size: 34px; line-height: 1.1; margin: 6px 0 8px; text-wrap: balance; }
+  header p { margin: 0; color: var(--muted); max-width: 66ch; }
+
+  h2 { font-family: var(--font-head); font-size: 21px; line-height: 1.2; margin: 0 0 10px; text-wrap: balance; }
+  h3 {
+    font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent);
+    margin: 22px 0 8px; font-weight: 700;
+  }
+  p { margin: 0 0 8px; }
+
+  code {
+    font-family: var(--font-mono); font-size: .86em; background: var(--code);
+    padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere;
+  }
+
+  .diagram { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px; overflow-x: auto; break-inside: avoid; }
+  .diagram svg { display: block; width: 100%; min-width: 560px; height: auto; }
+  svg .box { fill: var(--bg); stroke: var(--line); stroke-width: 1.5; }
+  svg .box-ac { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.5; }
+  svg .t { fill: var(--ink); font-family: var(--font-body); font-size: 14px; font-weight: 700; }
+  svg .m { fill: var(--muted); font-family: var(--font-mono); font-size: 11.5px; }
+  svg .s { fill: var(--ink); font-family: var(--font-body); font-size: 12px; }
+  svg .arrow { stroke: var(--accent); stroke-width: 2; fill: none; }
+  svg .dash { stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 5 4; fill: none; }
+  svg .lbl { fill: var(--accent); font-family: var(--font-mono); font-size: 11.5px; font-weight: 600; }
+  svg marker path { fill: var(--accent); }
+
+  .qa { display: flex; flex-direction: column; gap: 14px; }
+  .qa > div { break-inside: avoid; border-left: 3px solid var(--accent); padding: 1px 0 1px 13px; }
+  .qa .q { font-weight: 700; margin: 0 0 3px; }
+  .qa .a { margin: 0 0 6px; }
+  .qa .a:last-child { margin-bottom: 0; }
+  .ex {
+    background: var(--surface); border-radius: 8px; padding: 6px 11px; margin: 6px 0 0;
+    font-size: .94em;
+  }
+  .ex b { color: var(--accent); }
+  ol { margin: 4px 0 6px; padding-left: 22px; display: flex; flex-direction: column; gap: 3px; }
+  ol li::marker { color: var(--accent); font-weight: 700; }
+
+  .table-wrap { overflow-x: auto; break-inside: avoid; }
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+  th, td { text-align: left; vertical-align: top; padding: 7px 10px; border-bottom: 1px solid var(--line); }
+  th { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); border-bottom: 2px solid var(--ink); }
+  td:first-child { font-family: var(--font-mono); font-size: 12.5px; }
+  td:nth-child(2) { white-space: nowrap; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  .delicate { display: flex; flex-direction: column; gap: 12px; }
+  .delicate > div {
+    break-inside: avoid; background: var(--warn-soft); border: 1px solid var(--warn);
+    border-radius: 10px; padding: 10px 14px;
+  }
+  .delicate .k { font-weight: 700; color: var(--warn); margin: 0 0 3px; }
+  .delicate p { margin: 0 0 4px; }
+
+  .tips { background: var(--accent-soft); border-radius: 10px; padding: 12px 16px; break-inside: avoid; }
+  .tips ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+  .tips li::marker { color: var(--accent); }
+
+  footer { color: var(--muted); font-size: 12.5px; border-top: 1px solid var(--line); padding-top: 10px; }
+
+  @media (max-width: 520px) {
+    h1 { font-size: 27px; }
+    body { font-size: 14.5px; }
+  }
+
+  @page { size: A4; margin: 13mm 14mm; }
+  @media print {
+    :root, :root:not([data-theme="light"]), :root[data-theme="dark"] {
+      --bg: #ffffff; --surface: #f2f5f6; --ink: #15202a; --muted: #55636e; --line: #cfd7dc;
+      --accent: #0b6b6b; --accent-soft: #e3f2f1; --warn: #8a4f00; --warn-soft: #fff3de; --code: #e9eef0;
+      color-scheme: light;
+    }
+    html { padding: 0 !important; }
+    body { font-size: 9.6pt; line-height: 1.42; padding: 0; }
+    main { max-width: none; gap: 14px; }
+    h1 { font-size: 24pt; }
+    h2 { font-size: 13.5pt; margin-bottom: 6px; break-after: avoid; }
+    h3 { margin: 12px 0 6px; font-size: 8pt; break-after: avoid; }
+    .qa { gap: 9px; }
+    .diagram { overflow: visible; }
+    .diagram svg { min-width: 0; }
+    .table-wrap { overflow: visible; }
+    table { font-size: 8.8pt; }
+    th, td { padding: 4px 7px; }
+    td:first-child { font-size: 8.4pt; }
+  }
+</style>
+
+<main>
+  <header>
+    <div class="eyebrow">Algoritmos y Estructuras de Datos · TP2 · Defensa del viernes 20/11</div>
+    <h1>Detalles no triviales del TP2 de AirMiles</h1>
+    <p>Documento hecho con IA a partir del código, el material de la materia y la grabación de la reunión de repaso. No explica todo: junta lo que no se entiende leyendo el código, en forma de preguntas probables de la defensa, cada una con una respuesta corta para decir en voz alta. Los nombres en letra de código son los del programa.</p>
+  </header>
+
+  <section>
+    <h2>Panorama</h2>
+    <div class="diagram">
+      <svg viewBox="0 0 816 252" role="img" aria-label="Estructuras de AirMiles y cómo se relacionan">
+        <defs>
+          <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 1 L10 5 L0 9 z"/></marker>
+        </defs>
+
+        <rect class="box" x="8" y="14" width="220" height="84" rx="8"/>
+        <text class="t" x="20" y="38">usuarios</text>
+        <text class="m" x="20" y="58">ABB&lt;Usuario&gt;</text>
+        <text class="s" x="20" y="78">clave: id. Guarda las millas</text>
+
+        <rect class="box" x="298" y="14" width="220" height="84" rx="8"/>
+        <text class="t" x="310" y="38">handlesRanking</text>
+        <text class="m" x="310" y="58">ABB&lt;NodoHandle&gt;</text>
+        <text class="s" x="310" y="78">clave: id. Valor: su Handle</text>
+
+        <rect class="box" x="588" y="14" width="220" height="84" rx="8"/>
+        <text class="t" x="600" y="38">ranking</text>
+        <text class="m" x="600" y="58">HeapHandle&lt;ElementoRanking&gt;</text>
+        <text class="s" x="600" y="78">max-heap por millas disponibles</text>
+
+        <path class="dash" d="M228 56 H298"/>
+        <text class="lbl" x="237" y="46">mismo id</text>
+        <path class="arrow" d="M518 56 H586" marker-end="url(#ah)"/>
+        <text class="lbl" x="528" y="46">posición</text>
+
+        <rect class="box" x="8" y="148" width="220" height="84" rx="8"/>
+        <text class="t" x="20" y="172">promos</text>
+        <text class="m" x="20" y="192">Trie&lt;Promocion&gt;</text>
+        <text class="s" x="20" y="212">clave: nombre. Factor y tope</text>
+
+        <rect class="box" x="298" y="148" width="220" height="84" rx="8"/>
+        <text class="t" x="310" y="172">elMasAcumulador</text>
+        <text class="t" x="310" y="190">elMasCanjeador</text>
+        <text class="s" x="310" y="212">ids (int), arrancan en −1</text>
+
+        <rect class="box-ac" x="588" y="148" width="220" height="84" rx="8"/>
+        <text class="s" x="600" y="168" font-weight="700">Un dato en dos lugares</text>
+        <text class="s" x="600" y="184">millasDisponibles vive en</text>
+        <text class="s" x="600" y="198">Usuario y en el heap. Todo</text>
+        <text class="s" x="600" y="212">cambio de saldo llama a</text>
+        <text class="s" x="600" y="226">modificarPrioridad.</text>
+      </svg>
+    </div>
+
+    <div class="qa" style="margin-top:14px">
+      <div>
+        <p class="q">¿Qué estructuras usaron y por qué?</p>
+        <p class="a">Los usuarios van en un ABB ordenado por id. Las promociones van en un Trie, porque el enunciado pide <code>O(|L|)</code> y un Trie no depende de cuántas promociones haya. El ranking es un heap, porque saca el máximo en <code>O(log U)</code>. Como un heap no se puede buscar, hay un segundo ABB (id → handle) que dice en qué lugar del heap está cada usuario. Dos variables guardan el id del más acumulador y del más canjeador.</p>
+      </div>
+      <div>
+        <p class="q">¿Qué pasa por dentro cuando Ana canjea 100 millas?</p>
+        <ol class="a">
+          <li>El ABB de usuarios encuentra a Ana (<code>O(log U)</code> en promedio).</li>
+          <li>Se restan 100 a sus millas disponibles y se suman a sus millas perdidas.</li>
+          <li>El ABB de handles entrega el handle de Ana, que sabe en qué posición del heap está.</li>
+          <li><code>modificarPrioridad</code> le pone el saldo nuevo. Como bajó, Ana baja en el heap.</li>
+          <li>Si sus millas perdidas superan las del actual <code>elMasCanjeador</code>, Ana pasa a serlo.</li>
+        </ol>
+        <p class="a">Casi todas las operaciones siguen este patrón: buscar en el ABB, actualizar el <code>Usuario</code> y avisarle al heap.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Preguntas probables</h2>
+
+    <h3>ABB</h3>
+    <div class="qa">
+      <div>
+        <p class="q">¿Cómo busca el ABB a un usuario si guarda objetos <code>Usuario</code> y no ids?</p>
+        <p class="a">Compara objetos con su <code>compareTo</code>, y el de <code>Usuario</code> mira solo el id. Para buscar al usuario 7 se crea un <code>Usuario</code> nuevo con id 7 (el resto en cero) y se lo pasa a <code>devolver</code>: el ABB encuentra el que tiene el mismo id y devuelve el verdadero. Es lo que hacen <code>devolverUsuario</code> y <code>obtenerHandle</code>. <code>compareTo</code> expresa un orden (menor, igual, mayor); no es el <code>equals</code> de los talleres.</p>
+      </div>
+      <div>
+        <p class="q">¿Cómo elimina un nodo con dos hijos?</p>
+        <p class="a">Busca el sucesor (el menor de la rama derecha), copia su valor en el nodo que se quiere borrar y elimina el sucesor, que tiene como mucho un hijo. <code>AirMiles</code> nunca llama a <code>eliminar</code>.</p>
+      </div>
+      <div>
+        <p class="q">¿Cómo avanza el iterador, y por qué recorrerlo entero cuesta <code>O(U)</code>?</p>
+        <p class="a">Recorre de menor a mayor. <code>actual</code> es el nodo que se va a devolver; <code>siguiente()</code> devuelve su valor y busca el que sigue. Si el nodo tiene hijo derecho, el siguiente es el menor de ese subárbol. Si no, se sube mientras el nodo sea hijo derecho y se toma un padre más.</p>
+        <p class="ex"><b>Ejemplo.</b> Árbol: 20 con hijos 10 y 30; 10 con hijos 5 y 15; 15 con hijos 12 y 17. Desde el 10 el siguiente es el 12. Desde el 17 se sube a 15 y a 10 (ambos son hijos derechos de su padre) y se toma un padre más: el 20.</p>
+        <p class="a">Una sola llamada puede costar <code>O(U)</code>, pero en el recorrido completo cada arista se usa a lo sumo dos veces (una al bajar y otra al subir), así que el total es <code>O(U)</code>. El comentario <code>U * O(1)</code> del código es una simplificación de este argumento.</p>
+      </div>
+    </div>
+
+    <h3>Heap y handles</h3>
+    <div class="qa">
+      <div>
+        <p class="q">¿Para qué sirve el <code>Handle</code> y por qué hace falta un segundo ABB?</p>
+        <p class="a">Un heap no se puede buscar: encontrar a Ana sería recorrer todo el arreglo. El <code>Handle</code> guarda el valor y la posición (<code>pos</code>) dentro del arreglo del heap, y el heap actualiza <code>pos</code> cada vez que intercambia dos elementos. El segundo ABB (<code>handlesRanking</code>) guarda el handle de cada id.</p>
+        <p class="ex"><b>Recorrido.</b> El ABB encuentra el handle en <code>O(log U)</code>, el handle da la posición en <code>O(1)</code> y el heap reordena desde esa posición en <code>O(log U)</code>.</p>
+      </div>
+      <div>
+        <p class="q">¿Por qué <code>Handle</code> es una clase interna con constructor privado, y por qué <code>NodoHandle</code> repite el id?</p>
+        <p class="a">Solo el heap puede crear handles. Así <code>Usuario</code> no sabe en qué estructura está, y por eso no tiene un atributo "posición en el heap" (<code>justificacion.pdf</code>, p. 2). <code>NodoHandle</code> guarda el id aparte porque el valor dentro del <code>Handle</code> es privado y el ABB necesita su propia clave para ordenar.</p>
+      </div>
+      <div>
+        <p class="q">¿Cómo se reordena el heap cuando cambia un saldo o se borra un elemento?</p>
+        <p class="a"><code>modificarPrioridad</code> compara el valor nuevo con el viejo. Si aumentó, el elemento puede subir (<code>siftUp</code>). Si disminuyó, puede bajar (<code>siftDown</code>). Si es igual, no hace nada.</p>
+        <p class="a"><code>borrar</code> pone al último elemento del arreglo en el lugar del borrado y lo quita. Ese elemento puede quedar mal ubicado hacia arriba o hacia abajo, así que se hacen <code>siftUp</code> y <code>siftDown</code>. En la práctica solo uno de los dos mueve algo, y juntos siguen siendo <code>O(log n)</code>.</p>
+      </div>
+      <div>
+        <p class="q">¿Cómo desempata el ranking si dos usuarios tienen las mismas millas?</p>
+        <p class="a"><code>ElementoRanking.compareTo</code> ordena por millas disponibles y, si empatan, queda más arriba el de id menor. Así el ranking sale siempre en el mismo orden.</p>
+      </div>
+      <div>
+        <p class="q">¿Qué hace <code>rankingMillas</code> y por qué hay que reasignar handles?</p>
+        <p class="a">Saca del heap los <code>min(N, tamaño)</code> elementos mayores (salen ya ordenados) y guarda sus ids. Como sacarlos desarma el heap, los vuelve a encolar. Cada encolado crea un handle nuevo, y ese handle nuevo hay que guardarlo en <code>handlesRanking</code>. Si no, los handles viejos apuntarían a posiciones que ya no valen (lo cubre el test <code>rankingSeActualizaDespuesDeConsultarlo</code>). Cuesta N desencolar y N encolar, más N búsquedas en el ABB (ver punto delicado 1).</p>
+      </div>
+    </div>
+
+    <h3>Trie</h3>
+    <div class="qa">
+      <div>
+        <p class="q">¿Cómo está armado el Trie, y por qué insertar es <code>O(|L|)</code> si cada nodo tiene 256 lugares?</p>
+        <p class="a">Cada nodo tiene un arreglo <code>hijos</code> de 256 posiciones: el carácter "a" (código 97) va a la posición 97. Los arreglos se crean solo cuando se pasa por el nodo. Crear uno cuesta 256 pasos, que es una constante, así que insertar cuesta <code>O(1)</code> por letra y <code>O(|L|)</code> en total. Por lo mismo, insertar <code>NoPromo</code> (7 letras) en el constructor es <code>O(1)</code>. No hay símbolo de fin: una clave existe donde el nodo tiene <code>valor</code>. Es la variante "array de punteros" de T11.</p>
+        <p class="ex"><b>Ejemplo.</b> Insertar "av" baja por la posición 97 ("a") y después por la 118 ("v"). El valor queda en ese último nodo.</p>
+      </div>
+      <div>
+        <p class="q">¿Qué pasa si se inserta una clave que ya existe, o si se elimina una?</p>
+        <p class="a">Insertar sobre una clave que ya tiene valor no hace nada (sobrescribir era otra opción válida). Eliminar solo pone el valor en <code>null</code> y deja los nodos: así no hace falta lógica de podado y sigue siendo <code>O(|L|)</code>. El Trie no guarda altura ni cardinal porque nada lo necesita; fue una decisión consciente.</p>
+        <p class="a">Una limitación: un carácter con código mayor a 255 (como "€") lanza <code>IndexOutOfBoundsException</code>. La "ñ" (209) funciona.</p>
+      </div>
+    </div>
+
+    <h3>Reglas del negocio</h3>
+    <div class="qa">
+      <div>
+        <p class="q">¿Qué pasa si un vuelo se pasa del tope de una promoción?</p>
+        <p class="a">El vuelo se ignora por completo: no suma millas, ni siquiera con factor 1. Fue una decisión tomada desde la especificación de TP1 (el usuario "no puede volar con esta promoción" si se pasaría del tope). Sin tope, <code>NoPromo</code> tiene tope −1, que significa "sin tope"; si una promoción no existe o ya se eliminó, se usa <code>NoPromo</code>.</p>
+        <p class="ex"><b>Ejemplo.</b> Promoción con tope 300 y factor 3. Vuelo de 50 km: suma 150 y quedan 150 de tope. Vuelo de 100 km: ganaría 300, más de lo que queda, se ignora. Vuelo de 10 km: suma 30. Vuelo de 40 km: suma 120, justo lo que quedaba, y la promoción se elimina.</p>
+      </div>
+      <div>
+        <p class="q">¿Por qué el destino de una transferencia no suma millas totales?</p>
+        <p class="a">Porque el enunciado de TP2 lo aclara: lo recibido suma a las disponibles pero no a las totales. Así no cambia la categoría ni cuenta para <code>elMasAcumulador</code> (no se llega a Platino pasándose millas entre usuarios). El origen sí pierde disponibles y suma <code>millasPerdidas</code>, que cuenta para <code>elMasCanjeador</code>. Por eso <code>transferirMillas</code> solo revisa el más canjeador.</p>
+      </div>
+      <div>
+        <p class="q">¿Cómo se arma la lista de pares exclusivos en <code>O(U)</code>?</p>
+        <p class="a">Se recorre el ABB con el iterador. Cada usuario guarda en <code>tokenTransferidor</code> el id de su pareja exclusiva (0 si todavía no transfirió, −1 si dejó de ser exclusivo). Cada par aparecería dos veces, (1, 10) y (10, 1); para listarlo una sola vez se agrega <code>[id, token]</code> solo si <code>token &gt; 0</code> y <code>id &gt; token</code>. Los pares se juntan en un <code>ArrayList</code> y recién al final se copian a un <code>int[][]</code> del tamaño justo. Con un arreglo común habría que agrandarlo copiando en cada alta y no daría <code>O(U)</code>.</p>
+      </div>
+    </div>
+
+  </section>
+
+  <section>
+    <h2>Complejidades: de dónde sale cada una</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Operación</th><th>Pedida</th><th>Por qué</th></tr></thead>
+        <tbody>
+          <tr><td>crear</td><td class="num">O(1)</td><td>Constructores vacíos e inserción de <code>NoPromo</code> (7 letras, constante).</td></tr>
+          <tr><td>registrarUsuario (con o sin referidor)</td><td class="num">O(log U) prom. · O(U) peor</td><td>Insertar en el ABB de usuarios, encolar en el heap e insertar en el ABB de handles. Con referidor suma una búsqueda y un <code>modificarPrioridad</code>.</td></tr>
+          <tr><td>acumularMillas</td><td class="num">O(log U + |L|) prom. · O(U + |L|) peor</td><td>Buscar al usuario (ABB), obtener la promoción (Trie), <code>modificarPrioridad</code> y comparar con el máximo (otra búsqueda).</td></tr>
+          <tr><td>canjear, transferir, consultar</td><td class="num">O(log U) prom. · O(U) peor</td><td>Búsquedas en el ABB más un <code>modificarPrioridad</code> de <code>O(log U)</code>.</td></tr>
+          <tr><td>iniciar y finalizar promoción</td><td class="num">O(|L|)</td><td>Operaciones del Trie.</td></tr>
+          <tr><td>elMasAcumulador, elMasCanjeador</td><td class="num">O(1)</td><td>Se leen de una variable.</td></tr>
+          <tr><td>rankingMillas(N)</td><td class="num">O(N log U)</td><td>N desencolar, N encolar y N búsquedas en el ABB de handles (ver punto delicado 1).</td></tr>
+          <tr><td>paresTransferidoresExclusivos</td><td class="num">O(U)</td><td>Un recorrido completo del iterador, más armar el <code>int[][]</code> una vez.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Puntos delicados, para tener a mano</h2>
+    <div class="delicate">
+      <div>
+        <p class="k">1. El peor caso de <code>rankingMillas</code></p>
+        <p>El enunciado pide <code>O(N log U)</code> en peor caso. Las N búsquedas en <code>handlesRanking</code> son <code>O(log U)</code> en promedio y <code>O(U)</code> en peor caso (el ABB no está balanceado), así que el peor caso real es <code>O(N·U)</code>. La <code>justificacion.pdf</code> (p. 2) afirma <code>O(N log U)</code> sin aclararlo.</p>
+        <p>Comprobado ejecutándolo, con ids registrados en orden creciente y N = 2000: <code>rankingMillas</code> tarda 32, 219 y 778 ms para U = 10.000, 20.000 y 40.000. Con los mismos ids registrados en orden mezclado tarda 1 o 2 ms.</p>
+        <p><strong>Cómo responder:</strong> la cota es <code>O(N log U)</code> en promedio. El caso malo solo aparece con un ABB degenerado, por ejemplo con ids insertados en orden, y un AVL lo eliminaría.</p>
+      </div>
+      <div>
+        <p class="k">2. Millas disponibles mayores que las totales</p>
+        <p>Comprobado: un usuario recién registrado que recibe 100 millas por transferencia queda con 100 disponibles, y <code>transferirMillas</code> no toca sus millas totales (siguen en 0). TP1 pide que las disponibles no superen a las totales. TP2 aclara que lo recibido no suma a las totales.</p>
+        <p><strong>Cómo responder:</strong> TP1 no dice explícitamente que el destino suma totales, y la aclaración de TP2 define cómo tratar la transferencia. El código sigue esa aclaración. Si la regla que manejan es que TP1 prevalece ante contradicciones, este es el punto más expuesto: conviene acordar entre los cuatro la misma respuesta.</p>
+      </div>
+      <div>
+        <p class="k">3. Interfaces de la plantilla que no se usan</p>
+        <p>Comprobado: ninguna clase implementa <code>Handle</code> ni <code>Iterador</code>, las interfaces de la plantilla que están en <code>aed.tp2</code>. <code>HeapHandle.Handle</code> y <code>ABB_Iterador</code> son propios, y <code>Iterador</code> exige <code>anterior</code> y <code>hayAnterior</code>, que el ABB no tiene. En la reunión alguien recordó que el profe dijo que esos archivos "no se tocan", y otra persona dudó de si el iterador debía heredar de <code>Iterador</code>. Quedó sin resolver.</p>
+        <p><strong>Cómo responder:</strong> conviene decidir entre los cuatro una sola razón antes del viernes.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Fuentes: código entregado (<code>TP 2/src</code>), <code>justificacion.pdf</code>, consignas de TP1 y TP2, Teórica T10 y la reunión de repaso del 17/11.
+  </footer>
+</main>
