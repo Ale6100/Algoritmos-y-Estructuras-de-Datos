@@ -1,16 +1,18 @@
 package aed.tp2.recursos;
 
-public class ABB<T extends Comparable<T>> implements Conjunto<T> {
+public class ABB<K extends Comparable<K>, T> implements Diccionario<K, T> {
     private Nodo _raiz;
     private int _cardinal;
 
     private class Nodo {
+        K clave;
         T valor;
         Nodo izq;
         Nodo der;
         Nodo padre;
 
-        Nodo(T v) { // O(1)
+        Nodo(K c, T v) { // O(1)
+            this.clave = c;
             this.valor = v;     // O(1)
             this.izq = null;    // O(1)
             this.der = null;    // O(1)
@@ -47,18 +49,18 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
         return puntero.valor;                       // O(1)
     }
 
-    public void insertar(T elem) {  // O(log n) - O(n)
+    public void insertar(K clave, T valor) {  // O(log n) - O(n)
         Nodo puntero = this._raiz;                                                                      // O(1)
 
         if (puntero == null) {                                                                          // O(1)
-            this._raiz = new Nodo(elem);                                                                // O(1)
+            this._raiz = new Nodo(clave, valor);                                                                // O(1)
             this._cardinal = 1;                                                                         // O(1)
             return;                                                                                     // O(1)
         }
 
         int i = 0;                                                                                      // O(1)
-        while (i < this.cardinal() && this.puedoAvanzar(elem, puntero) && !this.sonIguales(puntero.valor, elem)) { // log n * O(1) = O(log n) - n * O(1) = O(n)
-            if (this.quieroIrALaDerecha(elem, puntero)) {       // O(1)
+        while (i < this.cardinal() && this.puedoAvanzar(clave, puntero) && !this.sonIguales(puntero.clave, clave)) { // log n * O(1) = O(log n) - n * O(1) = O(n)
+            if (this.quieroIrALaDerecha(clave, puntero)) {       // O(1)
                 puntero = this.voyALaDerecha(puntero);          // O(1)
             } else {                                            // O(1)
                 puntero = this.voyALaIzquierda(puntero);        // O(1)
@@ -66,14 +68,14 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
             i++;                                                // O(1)
         }
 
-        if (this.sonIguales(puntero.valor, elem)) {                                                     // O(1)
+        if (this.sonIguales(puntero.clave, clave)) {                                                     // O(1)
             return;                                                                                     // O(1)
         }
 
-        Nodo nuevoNodo = new Nodo(elem);                                                                // O(1)
+        Nodo nuevoNodo = new Nodo(clave, valor);                                                                // O(1)
         nuevoNodo.padre = puntero;                                                                      // O(1)
 
-        if (this.quieroIrALaDerecha(elem, puntero)) {                                                   // O(1)
+        if (this.quieroIrALaDerecha(clave, puntero)) {                                                   // O(1)
             puntero.der = nuevoNodo;                                                                    // O(1)
         } else {
             puntero.izq = nuevoNodo;                                                                    // O(1)
@@ -82,8 +84,8 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
         this._cardinal+= 1;                                                                             // O(1)
     }
 
-    private boolean puedoAvanzar(T elem, Nodo puntero) {    // O(1)
-        if (this.quieroIrALaDerecha(elem, puntero)) {   // O(1)
+    private boolean puedoAvanzar(K clave, Nodo puntero) {    // O(1)
+        if (this.quieroIrALaDerecha(clave, puntero)) {   // O(1)
             return this.puedoIrALaDerecha(puntero);     // O(1)
         }
         return this.puedoIrALaIzquierda(puntero);       // O(1)
@@ -93,8 +95,8 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
         return n.izq == null && n.der == null;  // O(1) + O(1) = O(1)
     }
 
-    private boolean quieroIrALaDerecha(T elem, Nodo puntero) {
-        return elem.compareTo(puntero.valor) > 0;
+    private boolean quieroIrALaDerecha(K clave, Nodo puntero) {
+        return clave.compareTo(puntero.clave) > 0;
     }
 
     private boolean puedoIrALaDerecha(Nodo puntero) { // O(1)
@@ -113,7 +115,7 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
         return puntero.izq; // O(1)
     }
 
-    private Nodo obtenerNodo(T elem) { // O(log n) - O(n)
+    private Nodo obtenerNodo(K clave) { // O(log n) - O(n)
         Nodo puntero = this._raiz;                                                                                          // O(1)
 
         if (puntero == null) {                                                                                              // O(1)
@@ -122,8 +124,8 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
 
         int i = 0;                                                                                                          // O(1)
 
-        while (i < this.cardinal() && puntero != null && !this.sonIguales(puntero.valor, elem) && !this.esHoja(puntero)) {  // log n * O(1) = O(log n) - n * O(1) = O(n)
-            if (this.quieroIrALaDerecha(elem, puntero)) {   // O(1)
+        while (i < this.cardinal() && puntero != null && !this.sonIguales(puntero.clave, clave) && !this.esHoja(puntero)) {  // log n * O(1) = O(log n) - n * O(1) = O(n)
+            if (this.quieroIrALaDerecha(clave, puntero)) {   // O(1)
                 puntero = this.voyALaDerecha(puntero);      // O(1)
             } else {
                 puntero = this.voyALaIzquierda(puntero);    // O(1)
@@ -131,7 +133,7 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
             i++;                                            // O(1)
         }
 
-        boolean llegoALNodoYTieneValor = puntero != null && this.sonIguales(puntero.valor, elem);                           // O(1)
+        boolean llegoALNodoYTieneValor = puntero != null && this.sonIguales(puntero.clave, clave);                           // O(1)
 
         if (llegoALNodoYTieneValor) {                                                                                       // O(1)
             return puntero;                                                                                                 // O(1)
@@ -140,8 +142,8 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
         return null;                                                                                                        // O(1)
     }
 
-    public T devolver(T elem) { // O(log n) - O(n)
-        Nodo puntero = this.obtenerNodo(elem);  // O(log n) - O(n)
+    public T devolver(K clave) { // O(log n) - O(n)
+        Nodo puntero = this.obtenerNodo(clave);  // O(log n) - O(n)
 
         if (puntero == null) {                  // O(1)
             return null;                        // O(1)
@@ -150,14 +152,15 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
         return puntero.valor;                   // O(1)
     }
 
-    private boolean sonIguales(T a, T b) {  // O(1)
-        return a.compareTo(b) == 0; // O(1)
+    private boolean sonIguales(K clave1, K clave2) {  // O(1)
+        return clave1.compareTo(clave2) == 0; // O(1)
     }
 
-    public boolean pertenece(T elem) { // O(log n) - O(n)
-        Nodo puntero = this.obtenerNodo(elem);          // O(log n) - O(n)
+    // Todo: Si nadie lo usa, se quita
+    public boolean pertenece(K clave) { // O(log n) - O(n)
+        Nodo puntero = this.obtenerNodo(clave);          // O(log n) - O(n)
 
-        if (puntero == null || puntero.valor == null) { // O(1) + O(1) = O(1)
+        if (puntero == null || puntero.clave == null) { // O(1) + O(1) = O(1)
             return false;                               // O(1)
         }
 
@@ -165,14 +168,14 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
     }
 
     private boolean soyHijoIzquierdo(Nodo puntero) {    // O(1)
-        return puntero.padre.valor.compareTo(puntero.valor) > 0;    // O(1)
+        return puntero.padre.clave.compareTo(puntero.clave) > 0;    // O(1)
     }
 
     private boolean soyHijoDerecho(Nodo puntero) {
         if (puntero.padre == null) {
             return false;
         }
-        return puntero.padre.valor.compareTo(puntero.valor) < 0;
+        return puntero.padre.clave.compareTo(puntero.clave) < 0;
     }
 
     private boolean soyRaiz(Nodo puntero) { // O(1)
@@ -200,8 +203,8 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
         return punteroMinimoSucesorDerecho;                             // O(1)
     }
 
-    public void eliminar(T elem){   // O(log n) - O(n)
-        Nodo puntero = this.obtenerNodo(elem);                                      // O(log n) - O(n)
+    public void eliminar(K clave){   // O(log n) - O(n)
+        Nodo puntero = this.obtenerNodo(clave);                                      // O(log n) - O(n)
 
         if (puntero == null) {                                                      // O(1)
             return;                                                                 // O(1)
@@ -261,10 +264,12 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
 
         // Caso 3/3: tiene dos hijos
         Nodo punteroMinimoSucesorDerecho = this.puntoMinimoSucesorDerecho(puntero); // O(log n) - O(n)
+        K claveSucesor = punteroMinimoSucesorDerecho.clave;
         T valorSucesor = punteroMinimoSucesorDerecho.valor;                         // O(1)
 
-        this.eliminar(valorSucesor);                                                // O(log n) - O(n) (entra al caso 1 o 2, ambas con complejidad O(log n) - O(n))
+        this.eliminar(clave);                                                // O(log n) - O(n) (entra al caso 1 o 2, ambas con complejidad O(log n) - O(n))
 
+        puntero.clave = claveSucesor;
         puntero.valor = valorSucesor;                                               // O(1)
     }
     
@@ -300,10 +305,10 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
             return puntero.padre;                                                               // O(1)
         }
 
-        public T siguiente() {  // O(log n) - O(n)
-            T valorActual = this._actual.valor;                                                 // O(1)
+        public K siguiente() {  // O(log n) - O(n)
+            K claveActual = this._actual.clave;                                                 // O(1)
             this._actual = this.minimoMasGrandeQue(this._actual);                               // O(log n) - O(n)
-            return valorActual;                                                                 // O(1)
+            return claveActual;                                                                 // O(1)
         }
     }
 

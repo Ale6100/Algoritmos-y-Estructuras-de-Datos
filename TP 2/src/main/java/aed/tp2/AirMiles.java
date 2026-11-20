@@ -9,7 +9,7 @@ public class AirMiles implements SistemaAirMiles {
     
     // private Trie<nombrePromo:String, valoresPromo: (factor:double, tope:double)> promos;
     
-    private ABB<Usuario> usuarios;
+    private ABB<Integer, Handle<Usuario>> usuarios;
     
     private Trie<Promocion> promos;
     
@@ -17,8 +17,7 @@ public class AirMiles implements SistemaAirMiles {
     private int elMasCanjeador;
     private int elMasAcumulador;
     
-    private HeapHandle<ElementoRanking> ranking; // Ordenado por cantidad de millas disponibles
-    private ABB<NodoHandle> handlesRanking;
+    private HeapHandle<Usuario> ranking; // Ordenado por cantidad de millas disponibles
     
 
     public AirMiles() {
@@ -225,7 +224,7 @@ public class AirMiles implements SistemaAirMiles {
     public int[][] paresTransferidoresExclusivos() { // O(U)
         ArrayList<int[]> paresExclusivos = new ArrayList<>();                                           // O(1)
 
-        ABB<Usuario>.ABB_Iterador iterador = this.usuarios.iterador();                                  // O(log U) - O(U)
+        ABB<Integer, Usuario>.ABB_Iterador iterador = this.usuarios.iterador();                                  // O(log U) - O(U)
 
         while (iterador.haySiguiente()) {                                                               // U * O(1) = O(U)
             Usuario u = iterador.siguiente();                                                     // O(1)
@@ -295,3 +294,6 @@ public class AirMiles implements SistemaAirMiles {
         }
     }
 }
+
+ABB<ID,Handle<Usuario>>
+MaxHeap<Usuario>
